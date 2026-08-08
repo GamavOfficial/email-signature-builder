@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Professional Email Signature and Template Builder"
+    >
+
+    <title>Signature Studio</title>
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+<body>
+
+<!-- =========================================================
+     APP
+========================================================= -->
+
+<div id="app">
+
+    <!-- =====================================================
+         TOP HEADER
+    ====================================================== -->
+
+    <header class="topbar">
+
+        <div class="brand">
+
+            <div class="brand-logo">
+                SS
+            </div>
+
+            <div class="brand-info">
+                <h1>Signature Studio</h1>
+                <span>Professional Template Builder</span>
+            </div>
+
+        </div>
+
+
+        <div class="top-actions">
+
+            <button
+                class="top-btn"
+                id="undoBtn"
+                title="Undo"
+            >
+                ↶
+            </button>
+
+            <button
+                class="top-btn"
+                id="redoBtn"
+                title="Redo"
+            >
+                ↷
+            </button>
+
+            <button
+                class="top-btn"
+                id="previewBtn"
+            >
+                Preview
+            </button>
+
+            <button
+                class="top-btn primary"
+                id="exportBtn"
+            >
+                Export
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <!-- =====================================================
+         MAIN WORKSPACE
+    ====================================================== -->
+
+    <main class="workspace">
+
+
+        <!-- =================================================
+             LEFT SIDEBAR
+        ================================================== -->
+
+        <aside class="left-panel">
+
+            <div class="panel-title">
+                <span>Elements</span>
+            </div>
+
+
+            <div class="element-grid">
+
+
+                <button
+                    class="element-btn"
+                    data-element="text"
+                >
+                    <span class="element-icon">T</span>
+                    <span>Text</span>
+                </button>
+
+
+                <button
+                    class="element-btn"
+                    data-element="heading"
+                >
+                    <span class="element-icon">H</span>
+                    <span>Heading</span>
+                </button>
+
+
+                <button
+                    class="element-btn"
+                    data-element="image"
+                >
+                    <span class="element-icon">▧</span>
+                    <span>Image</span>
+                </button>
+
+
+                <button
+                    class="element-btn"
+                    data-element="logo"
+                >
+                    <span class="element-icon">◉</span>
+                    <span>Logo</span>
+                </button>
+
+
+                <button
+                    class="element-btn"
+                    data-element="banner"
+                >
+                    <span class="element-icon">▤</span>
+                    <span>Banner</span>
+                </button>
+
+
+                <button
+                    class="element-btn"
+                    data-element="social"
+                >
+                    <span class="element-icon">◎</span>
+                    <span>Social</span>
+                </button>
+
+
+                <button
+                    class="element-btn"
+                    data-element="link"
+                >
+                    <span class="element-icon">↗</span>
+                    <span>Link</span>
+                </button>
+
+
+                <button
+                    class="element-btn"
+                    data-element="divider"
+                >
+                    <span class="element-icon">―</span>
+                    <span>Divider</span>
+                </button>
+
+
+                <button
+                    class="element-btn"
+                    data-element="button"
+                >
+                    <span class="element-icon">▣</span>
+                    <span>Button</span>
+                </button>
+
+
+                <button
+                    class="element-btn"
+                    data-element="spacer"
+                >
+                    <span class="element-icon">↕</span>
+                    <span>Spacer</span>
+                </button>
+
+            </div>
+
+
+            <!-- =================================================
+                 QUICK ACTIONS
+            ================================================== -->
+
+            <div class="sidebar-section">
+
+                <div class="section-title">
+                    Quick Actions
+                </div>
+
+                <button
+                    class="sidebar-action"
+                    id="addElementBtn"
+                >
+                    + Add Element
+                </button>
+
+                <button
+                    class="sidebar-action"
+                    id="uploadImageBtn"
+                >
+                    Upload Image
+                </button>
+
+                <input
+                    type="file"
+                    id="imageInput"
+                    accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
+                    hidden
+                >
+
+            </div>
+
+
+            <!-- =================================================
+                 TEMPLATES
+            ================================================== -->
+
+            <div class="sidebar-section">
+
+                <div class="section-title">
+                    Templates
+                </div>
+
+                <button
+                    class="template-open-btn"
+                    id="templatesBtn"
+                >
+                    Browse Templates
+                </button>
+
+            </div>
+
+        </aside>
+
+
+
+        <!-- =================================================
+             CENTER EDITOR
+        ================================================== -->
+
+        <section class="editor-area">
+
+
+            <div class="editor-toolbar">
+
+                <div class="toolbar-left">
+
+                    <span class="toolbar-label">
+                        Editor
+                    </span>
+
+                    <span
+                        class="status-dot"
+                        id="saveStatus"
+                    ></span>
+
+                    <span
+                        class="status-text"
+                        id="statusText"
+                    >
+                        Ready
+                    </span>
+
+                </div>
+
+
+                <div class="toolbar-right">
+
+                    <button
+                        class="toolbar-btn"
+                        id="zoomOutBtn"
+                    >
+                        −
+                    </button>
+
+                    <span id="zoomValue">
+                        100%
+                    </span>
+
+                    <button
+                        class="toolbar-btn"
+                        id="zoomInBtn"
+                    >
+                        +
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 CANVAS
+            ================================================== -->
+
+            <div
+                class="canvas-wrapper"
+                id="canvasWrapper"
+            >
+
+                <div
+                    class="signature-canvas"
+                    id="signatureCanvas"
+                >
+
+                    <!-- Default Template -->
+
+                    <div
+                        class="signature-block"
+                        data-id="name"
+                        data-type="heading"
+                        tabindex="0"
+                    >
+
+                        <div class="element-content">
+                            Your Name
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="signature-block"
+                        data-id="role"
+                        data-type="text"
+                        tabindex="0"
+                    >
+
+                        <div class="element-content">
+                            Your Job Title
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="signature-block"
+                        data-id="company"
+                        data-type="text"
+                        tabindex="0"
+                    >
+
+                        <div class="element-content">
+                            Your Company
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        class="signature-block"
+                        data-id="contact"
+                        data-type="text"
+                        tabindex="0"
+                    >
+
+                        <div class="element-content">
+                            Email • Phone • Website
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 BOTTOM BAR
+            ================================================== -->
+
+            <div class="editor-bottom">
+
+                <span>
+                    Click an element to edit
+                </span>
+
+                <div>
+
+                    <button id="deleteSelectedBtn">
+                        Delete
+                    </button>
+
+                    <button id="duplicateSelectedBtn">
+                        Duplicate
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =================================================
+             RIGHT PROPERTY PANEL
+        ================================================== -->
+
+        <aside class="right-panel">
+
+
+            <div class="panel-title">
+                <span>Properties</span>
+            </div>
+
+
+            <div
+                id="propertiesPanel"
+                class="properties-panel"
+            >
+
+                <div class="empty-properties">
+
+                    <div class="empty-icon">
+                        ⚙
+                    </div>
+
+                    <h3>
+                        No Element Selected
+                    </h3>
+
+                    <p>
+                        Select an element from the canvas
+                        to customize it.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </aside>
+
+    </main>
+
+
+
+    <!-- =====================================================
+         TEMPLATE MODAL
+    ====================================================== -->
+
+    <div
+        class="modal"
+        id="templateModal"
+        hidden
+    >
+
+        <div class="modal-overlay"></div>
+
+        <div class="modal-box">
+
+            <div class="modal-header">
+
+                <h2>
+                    Choose Template
+                </h2>
+
+                <button
+                    class="modal-close"
+                    id="closeTemplateModal"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div
+                class="template-grid"
+                id="templateGrid"
+            >
+
+                <!-- Templates will be added by JS -->
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         PREVIEW MODAL
+    ====================================================== -->
+
+    <div
+        class="modal"
+        id="previewModal"
+        hidden
+    >
+
+        <div class="modal-overlay"></div>
+
+        <div class="modal-box preview-box">
+
+            <div class="modal-header">
+
+                <h2>
+                    Signature Preview
+                </h2>
+
+                <button
+                    class="modal-close"
+                    id="closePreviewModal"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div class="preview-container">
+
+                <div
+                    id="previewContent"
+                    class="preview-content"
+                ></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         MAIN JAVASCRIPT
+    ====================================================== -->
+
+    <script src="js/app.js"></script>
+
+</body>
+  </html>
