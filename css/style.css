@@ -989,15 +989,9 @@ button {
 @media (max-width: 1000px) {
 
     .workspace {
-
         grid-template-columns:
             190px
             minmax(350px, 1fr);
-    }
-
-    .right-panel {
-
-        display: none;
     }
 
 }
