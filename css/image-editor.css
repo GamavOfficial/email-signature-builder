@@ -1,0 +1,666 @@
+/* =========================================================
+   SIGNATURE STUDIO
+   PART 3
+   ADVANCED IMAGE EDITOR
+========================================================= */
+
+
+/* =========================================================
+   IMAGE PROPERTY PANEL
+========================================================= */
+
+.image-property-section {
+    padding: 14px 0;
+    border-bottom: 1px solid #242933;
+}
+
+.image-property-title {
+    margin-bottom: 9px;
+
+    color: #e5e9ef;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   IMAGE UPLOAD AREA
+========================================================= */
+
+.image-upload-area {
+
+    width: 100%;
+    min-height: 110px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 15px;
+
+    border: 1px dashed #353c48;
+    border-radius: 10px;
+
+    background: #151920;
+
+    color: #858e9d;
+
+    cursor: pointer;
+
+    transition: .2s ease;
+}
+
+.image-upload-area:hover {
+
+    border-color: #4c82ff;
+
+    background: #1a2029;
+
+    color: #dce2eb;
+}
+
+
+.image-upload-icon {
+
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: #202630;
+
+    color: white;
+
+    font-size: 17px;
+}
+
+
+.image-upload-title {
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+
+.image-upload-subtitle {
+
+    font-size: 9px;
+
+    color: #697280;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   IMAGE PREVIEW
+========================================================= */
+
+.image-preview-box {
+
+    width: 100%;
+
+    min-height: 100px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 12px;
+
+    overflow: hidden;
+
+    border: 1px solid #292f39;
+
+    border-radius: 9px;
+
+    background:
+        linear-gradient(
+            45deg,
+            #151920 25%,
+            #191e26 25%,
+            #191e26 50%,
+            #151920 50%,
+            #151920 75%,
+            #191e26 75%
+        );
+
+    background-size: 16px 16px;
+}
+
+
+.image-preview-box img {
+
+    display: block;
+
+    max-width: 100%;
+    max-height: 160px;
+
+    object-fit: contain;
+
+    border-radius: 4px;
+}
+
+
+/* =========================================================
+   IMAGE SIZE
+========================================================= */
+
+.image-size-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 8px;
+}
+
+
+.image-size-field label {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #858e9d;
+
+    font-size: 9px;
+}
+
+
+.image-size-field input {
+
+    width: 100%;
+
+    height: 35px;
+
+    padding: 0 9px;
+
+    border: 1px solid #2a303a;
+
+    border-radius: 7px;
+
+    outline: none;
+
+    background: #151920;
+
+    color: #e3e7ed;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   IMAGE ALIGNMENT
+========================================================= */
+
+.image-align-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 6px;
+}
+
+
+.image-align-btn {
+
+    height: 34px;
+
+    border: 1px solid #292f39;
+
+    border-radius: 7px;
+
+    background: #151920;
+
+    color: #aab3bf;
+
+    font-size: 13px;
+
+    transition: .18s ease;
+}
+
+
+.image-align-btn:hover {
+
+    background: #202630;
+
+    color: white;
+}
+
+
+.image-align-btn.active {
+
+    background: #315ebf;
+
+    border-color: #4c82ff;
+
+    color: white;
+}
+
+
+/* =========================================================
+   IMAGE POSITION
+========================================================= */
+
+.image-position-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 8px;
+}
+
+
+.image-position-field label {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #858e9d;
+
+    font-size: 9px;
+}
+
+
+.image-position-field input {
+
+    width: 100%;
+
+    height: 35px;
+
+    padding: 0 9px;
+
+    border: 1px solid #2a303a;
+
+    border-radius: 7px;
+
+    outline: none;
+
+    background: #151920;
+
+    color: #e3e7ed;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   IMAGE RADIUS
+========================================================= */
+
+.image-range-row {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+}
+
+
+.image-range-row input[type="range"] {
+
+    flex: 1;
+
+    height: 4px;
+
+    padding: 0;
+
+    border: 0;
+
+    outline: none;
+
+    accent-color: #4c82ff;
+}
+
+
+.image-range-value {
+
+    width: 48px;
+
+    text-align: right;
+
+    color: #aeb6c3;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   IMAGE LINK
+========================================================= */
+
+.image-link-input {
+
+    width: 100%;
+
+    height: 36px;
+
+    padding: 0 10px;
+
+    border: 1px solid #2a303a;
+
+    border-radius: 7px;
+
+    outline: none;
+
+    background: #151920;
+
+    color: #dfe4ec;
+
+    font-size: 10px;
+}
+
+
+.image-link-input:focus {
+
+    border-color: #4c82ff;
+
+    box-shadow:
+        0 0 0 2px
+        rgba(76,130,255,.08);
+}
+
+
+/* =========================================================
+   IMAGE LINK TOGGLE
+========================================================= */
+
+.image-toggle-row {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    min-height: 34px;
+}
+
+
+.image-toggle-label {
+
+    color: #b7bfca;
+
+    font-size: 10px;
+}
+
+
+.image-toggle {
+
+    position: relative;
+
+    width: 38px;
+    height: 21px;
+
+    border-radius: 20px;
+
+    background: #292f38;
+
+    cursor: pointer;
+
+    transition: .2s ease;
+}
+
+
+.image-toggle::after {
+
+    content: "";
+
+    position: absolute;
+
+    top: 3px;
+    left: 3px;
+
+    width: 15px;
+    height: 15px;
+
+    border-radius: 50%;
+
+    background: #aab2be;
+
+    transition: .2s ease;
+}
+
+
+.image-toggle.active {
+
+    background: #3d70dc;
+}
+
+
+.image-toggle.active::after {
+
+    left: 20px;
+
+    background: white;
+}
+
+
+/* =========================================================
+   IMAGE ACTIONS
+========================================================= */
+
+.image-actions {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 7px;
+}
+
+
+.image-action-btn {
+
+    height: 35px;
+
+    border: 1px solid #2b313c;
+
+    border-radius: 7px;
+
+    background: #171c23;
+
+    color: #b9c0ca;
+
+    font-size: 10px;
+
+    transition: .18s ease;
+}
+
+
+.image-action-btn:hover {
+
+    background: #232933;
+
+    color: white;
+}
+
+
+.image-action-btn.danger {
+
+    color: #e88787;
+}
+
+
+.image-action-btn.danger:hover {
+
+    background: #351e22;
+
+    color: #ffb0b0;
+}
+
+
+/* =========================================================
+   CANVAS IMAGE
+========================================================= */
+
+.signature-block[data-type="image"] {
+
+    width: 100%;
+
+    min-height: 20px;
+
+    position: relative;
+
+    overflow: visible;
+}
+
+
+.signature-block[data-type="image"] img {
+
+    display: block;
+
+    max-width: 100%;
+
+    height: auto;
+
+    object-fit: contain;
+
+    transition:
+        width .15s ease,
+        height .15s ease,
+        border-radius .15s ease;
+}
+
+
+/* =========================================================
+   IMAGE SELECTION
+========================================================= */
+
+.signature-block[data-type="image"].selected img {
+
+    outline:
+        1px dashed
+        #4d83ff;
+
+    outline-offset: 3px;
+}
+
+
+/* =========================================================
+   IMAGE DRAG HANDLE FOUNDATION
+========================================================= */
+
+.image-resize-handle {
+
+    position: absolute;
+
+    width: 10px;
+    height: 10px;
+
+    border:
+        2px solid
+        white;
+
+    border-radius: 3px;
+
+    background: #4c82ff;
+
+    z-index: 10;
+
+    display: none;
+}
+
+
+.signature-block[data-type="image"].selected
+.image-resize-handle {
+
+    display: block;
+}
+
+
+.image-resize-handle.bottom-right {
+
+    right: -5px;
+    bottom: -5px;
+
+    cursor:
+        nwse-resize;
+}
+
+
+/* =========================================================
+   IMAGE FORMAT BADGE
+========================================================= */
+
+.image-format-badge {
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 35px;
+    height: 22px;
+
+    padding: 0 7px;
+
+    border-radius: 5px;
+
+    background: #202630;
+
+    color: #aeb7c4;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   IMAGE URL STATUS
+========================================================= */
+
+.image-url-status {
+
+    margin-top: 6px;
+
+    font-size: 9px;
+
+    color: #687180;
+}
+
+
+.image-url-status.active {
+
+    color: #65c58a;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .image-size-grid,
+    .image-position-grid {
+
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+}
