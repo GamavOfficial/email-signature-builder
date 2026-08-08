@@ -992,12 +992,22 @@ button {
 
         grid-template-columns:
             190px
-            minmax(350px, 1fr);
+            minmax(350px, 1fr)
+            280px;
+    }
+
+    .left-panel {
+
+        width: 190px;
     }
 
     .right-panel {
 
-        display: none;
+        display: block;
+
+        width: 280px;
+
+        min-width: 280px;
     }
 
 }
