@@ -2097,3 +2097,377 @@ function rgbToHex(
             .join("");
 
       }
+
+/* =========================================================
+   PROFESSIONAL LINK + IMAGE ENGINE
+   v2
+========================================================= */
+
+(function(){
+function installProfessionalMediaLinkEngine(){
+
+    App.pendingImageType = "image";
+
+    function safe(value){
+        return escapeHTML(value == null ? "" : value);
+    }
+
+    function ensureHttps(url){
+        const value = String(url || "").trim();
+        if (!value) return "#";
+        if (/^(https?:|mailto:|tel:|sms:|javascript:)/i.test(value)) return value;
+        if (/^www\./i.test(value)) return "https://" + value;
+        return "https://" + value;
+    }
+
+    function makeId(prefix="element"){
+        return prefix + "-" + Date.now() + "-" + Math.random().toString(36).slice(2,7);
+    }
+
+    function createBlock(type){
+        const element = document.createElement("div");
+        element.className = "signature-block";
+        element.dataset.id = makeId(type);
+        element.dataset.type = type;
+        element.setAttribute("tabindex", "0");
+        return element;
+    }
+
+    function styleBase(content){
+        content.classList.add("element-content");
+        content.style.boxSizing = "border-box";
+    }
+
+    function createLinkElement(type="link"){
+        const element = createBlock(type);
+        const link = document.createElement("a");
+        styleBase(link);
+        link.className = "element-content professional-link";
+        link.textContent = type === "button" ? "Visit Website" : "Click Here";
+        link.href = "https://example.com";
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.dataset.url = link.href;
+        link.dataset.target = "blank";
+
+        if (type === "button") {
+            Object.assign(link.style, {
+                display:"inline-block",
+                padding:"10px 18px",
+                background:"#111827",
+                color:"#ffffff",
+                textDecoration:"none",
+                borderRadius:"8px",
+                fontWeight:"700",
+                lineHeight:"1.2"
+            });
+        } else {
+            Object.assign(link.style, {
+                color:"#2563eb",
+                textDecoration:"underline",
+                fontWeight:"600"
+            });
+        }
+
+        element.appendChild(link);
+        return element;
+    }
+
+    function createImageElement(src="", type="image"){
+        const element = createBlock(type);
+        const image = document.createElement("img");
+        image.className = "element-content professional-image";
+        image.alt = type === "logo" ? "Logo" : type === "banner" ? "Banner" : "Image";
+        image.src = src || "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(
+            `<svg xmlns="http://www.w3.org/2000/svg" width="520" height="180" viewBox="0 0 520 180"><rect width="520" height="180" rx="18" fill="#f3f4f6"/><text x="260" y="92" text-anchor="middle" dominant-baseline="middle" font-family="Arial" font-size="22" fill="#6b7280">${type.toUpperCase()} • Upload Image</text></svg>`
+        );
+        image.style.display = "block";
+        image.style.maxWidth = "100%";
+        image.style.width = type === "banner" ? "520px" : type === "logo" ? "160px" : "260px";
+        image.style.height = "auto";
+        image.style.borderRadius = "8px";
+        image.dataset.src = src || "";
+        element.appendChild(image);
+        return element;
+    }
+
+    function addProfessionalElement(type){
+        const canvas = $("#signatureCanvas");
+        let element;
+
+        if (type === "link" || type === "button") {
+            element = createLinkElement(type);
+        } else if (type === "image" || type === "logo" || type === "banner") {
+            App.pendingImageType = type;
+            $("#imageInput").click();
+            return;
+        } else {
+            return null;
+        }
+
+        canvas.appendChild(element);
+        selectElement(element);
+        saveHistory();
+        return element;
+    }
+
+    // Replace the original element factory only for professional media/link types.
+    const originalAddElement = window.addElement;
+    window.addElement = function(type){
+        if (["link","button","image","logo","banner"].includes(type)) {
+            return addProfessionalElement(type);
+        }
+        return originalAddElement(type);
+    };
+
+    // Prevent accidental navigation while the editor canvas is active.
+    const canvas = $("#signatureCanvas");
+    if (canvas && !canvas.dataset.professionalLinkGuard) {
+        canvas.dataset.professionalLinkGuard = "1";
+        canvas.addEventListener("click", function(event){
+            const anchor = event.target.closest("a");
+            if (anchor && anchor.closest(".signature-block")) {
+                event.preventDefault();
+            }
+        }, true);
+    }
+
+    window.handleImageUpload = function(event){
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        if (!file.type.startsWith("image/")) {
+            alert("Please select a valid image file.");
+            event.target.value = "";
+            return;
+        }
+
+        const type = App.pendingImageType || "image";
+        const reader = new FileReader();
+        reader.onload = function(e){
+            const element = createImageElement(e.target.result, type);
+            element.querySelector("img").dataset.fileName = file.name;
+            element.querySelector("img").dataset.fileType = file.type;
+            element.querySelector("img").dataset.fileSize = String(file.size);
+            $("#signatureCanvas").appendChild(element);
+            selectElement(element);
+            saveHistory();
+            updateStatus(`${type.toUpperCase()} added`);
+            event.target.value = "";
+        };
+        reader.readAsDataURL(file);
+    };
+
+    // Replace quick-action handler so uploaded images use the same engine.
+    const imageInput = $("#imageInput");
+    if (imageInput) {
+        imageInput.removeEventListener("change", handleImageUpload);
+        imageInput.addEventListener("change", window.handleImageUpload);
+    }
+
+    // Add a professional property renderer on top of the existing generic renderer.
+    const originalRenderProperties = window.renderProperties;
+    window.renderProperties = function(element){
+        const type = element.dataset.type;
+        if (["link","button","image","logo","banner"].includes(type)) {
+            renderProfessionalProperties(element);
+            return;
+        }
+        return originalRenderProperties(element);
+    };
+
+    function renderProfessionalProperties(element){
+        const type = element.dataset.type;
+        const isLink = type === "link" || type === "button";
+        const image = element.querySelector("img");
+        const anchor = element.querySelector("a");
+        const targetBlank = anchor ? anchor.target === "_blank" : true;
+        const content = anchor || image;
+        if (!content) return;
+
+        const computed = getComputedStyle(content);
+        const text = anchor ? anchor.textContent : "";
+        const url = anchor ? (anchor.getAttribute("href") || "") : (image.dataset.link || "");
+        const alt = image ? (image.alt || "") : "";
+        const width = image ? parseInt(image.getBoundingClientRect().width || image.width || 260,10) : 0;
+        const height = image ? parseInt(image.getBoundingClientRect().height || image.height || 0,10) : 0;
+        const radius = parseInt(computed.borderRadius,10) || 0;
+        const textColor = rgbToHex(computed.color);
+        const backgroundColor = rgbToHex(computed.backgroundColor);
+
+        $("#propertiesPanel").innerHTML = `
+            <div class="property-section professional-property-head">
+                <div class="property-title">Element</div>
+                <div class="property-type">${safe(type.toUpperCase())}</div>
+            </div>
+
+            ${isLink ? `
+            <div class="property-section">
+                <label>Link Text</label>
+                <input id="proLinkText" type="text" value="${safe(text)}">
+            </div>
+            <div class="property-section">
+                <label>Link URL</label>
+                <input id="proLinkUrl" type="url" value="${safe(url)}" placeholder="https://example.com">
+            </div>
+            <div class="property-section">
+                <label class="pro-switch-row">
+                    <span>Open in new tab</span>
+                    <input id="proLinkTarget" type="checkbox" ${targetBlank ? "checked" : ""}>
+                </label>
+            </div>
+            ` : `
+            <div class="property-section">
+                <label>Image</label>
+                <button type="button" class="property-action-btn" id="proReplaceImage">Replace Image</button>
+            </div>
+            <div class="property-section">
+                <label>Image URL</label>
+                <input id="proImageUrl" type="url" value="${safe(image.dataset.src || "")}" placeholder="https://.../image.png">
+            </div>
+            <div class="property-section">
+                <label>Alt Text</label>
+                <input id="proImageAlt" type="text" value="${safe(alt)}" placeholder="Describe this image">
+            </div>
+            <div class="property-section">
+                <label>Dimensions</label>
+                <div class="property-two-column">
+                    <div><label>Width</label><input id="proImageWidth" type="number" min="20" max="1600" value="${width}"></div>
+                    <div><label>Height</label><input id="proImageHeight" type="number" min="0" max="1600" value="${height || ""}"></div>
+                </div>
+            </div>
+            <div class="property-section">
+                <label>Clickable Image URL</label>
+                <input id="proImageLink" type="url" value="${safe(image.dataset.link || "")}" placeholder="https://example.com">
+            </div>
+            <div class="property-section">
+                <label class="pro-switch-row">
+                    <span>Open image link in new tab</span>
+                    <input id="proImageTarget" type="checkbox" ${image.dataset.linkTarget !== "same" ? "checked" : ""}>
+                </label>
+            </div>
+            `}
+
+            <div class="property-section">
+                <label>Text Color</label>
+                <div class="color-control"><input id="proTextColor" type="color" value="${textColor}"><div class="color-value">${textColor.toUpperCase()}</div></div>
+            </div>
+            <div class="property-section">
+                <label>Background</label>
+                <div class="color-control"><input id="proBgColor" type="color" value="${backgroundColor}"><div class="color-value">${backgroundColor.toUpperCase()}</div></div>
+            </div>
+            <div class="property-section">
+                <label>Border Radius</label>
+                <div class="range-row"><input id="proRadius" type="range" min="0" max="100" value="${radius}"><span class="range-value" id="proRadiusValue">${radius}px</span></div>
+            </div>
+            <div class="property-section">
+                <div class="property-actions">
+                    <button type="button" class="property-action-btn" id="proReset">Reset Style</button>
+                    <button type="button" class="property-action-btn danger" id="proDelete">Delete</button>
+                </div>
+            </div>
+        `;
+
+        const setAndSave = (fn) => {
+            fn();
+            saveHistory();
+        };
+
+        if (isLink) {
+            $("#proLinkText").addEventListener("input", e => setAndSave(() => anchor.textContent = e.target.value));
+            $("#proLinkUrl").addEventListener("input", e => setAndSave(() => { anchor.href = ensureHttps(e.target.value); anchor.dataset.url = e.target.value; }));
+            $("#proLinkTarget").addEventListener("change", e => setAndSave(() => {
+                anchor.target = e.target.checked ? "_blank" : "_self";
+                anchor.rel = e.target.checked ? "noopener noreferrer" : "";
+            }));
+        } else {
+            $("#proReplaceImage").addEventListener("click", () => {
+                App.pendingImageType = type;
+                imageInput.click();
+                App.replaceImageTarget = element;
+            });
+            $("#proImageUrl").addEventListener("change", e => setAndSave(() => {
+                const value = e.target.value.trim();
+                if (value) { image.src = value; image.dataset.src = value; }
+            }));
+            $("#proImageAlt").addEventListener("input", e => setAndSave(() => image.alt = e.target.value));
+            $("#proImageWidth").addEventListener("input", e => setAndSave(() => image.style.width = Math.max(20, Number(e.target.value)||20) + "px"));
+            $("#proImageHeight").addEventListener("input", e => setAndSave(() => image.style.height = Number(e.target.value) > 0 ? Number(e.target.value)+"px" : "auto"));
+            $("#proImageLink").addEventListener("input", e => setAndSave(() => image.dataset.link = e.target.value.trim()));
+            $("#proImageTarget").addEventListener("change", e => setAndSave(() => image.dataset.linkTarget = e.target.checked ? "blank" : "same"));
+        }
+
+        $("#proTextColor").addEventListener("input", e => setAndSave(() => content.style.color = e.target.value));
+        $("#proBgColor").addEventListener("input", e => setAndSave(() => content.style.backgroundColor = e.target.value));
+        $("#proRadius").addEventListener("input", e => {
+            $("#proRadiusValue").textContent = e.target.value + "px";
+            setAndSave(() => content.style.borderRadius = e.target.value + "px");
+        });
+        $("#proDelete").addEventListener("click", deleteSelected);
+        $("#proReset").addEventListener("click", () => {
+            if (isLink) {
+                anchor.style.fontSize = "";
+                anchor.style.fontWeight = type === "button" ? "700" : "600";
+                anchor.style.fontStyle = "";
+                anchor.style.letterSpacing = "";
+                anchor.style.lineHeight = "1.2";
+                anchor.style.borderRadius = type === "button" ? "8px" : "";
+            } else {
+                image.style.borderRadius = "8px";
+                image.style.height = "auto";
+            }
+            saveHistory();
+            renderProfessionalProperties(element);
+        });
+    }
+
+    // Replace image while keeping the selected element and all metadata.
+    const originalHandleImageUpload = window.handleImageUpload;
+    window.handleImageUpload = function(event){
+        const target = App.replaceImageTarget;
+        if (!target) return originalHandleImageUpload(event);
+        const file = event.target.files && event.target.files[0];
+        if (!file || !file.type.startsWith("image/")) return;
+        const reader = new FileReader();
+        reader.onload = function(e){
+            const image = target.querySelector("img");
+            if (image) {
+                image.src = e.target.result;
+                image.dataset.src = e.target.result;
+                image.dataset.fileName = file.name;
+                image.dataset.fileType = file.type;
+                image.dataset.fileSize = String(file.size);
+            }
+            App.replaceImageTarget = null;
+            event.target.value = "";
+            selectElement(target);
+            saveHistory();
+            updateStatus("Image replaced");
+        };
+        reader.readAsDataURL(file);
+    };
+
+    // Rebuild the hidden input so old change handlers cannot fire twice.
+    if (imageInput && imageInput.parentNode) {
+        const freshInput = imageInput.cloneNode(true);
+        imageInput.parentNode.replaceChild(freshInput, imageInput);
+        freshInput.addEventListener("change", window.handleImageUpload);
+    }
+
+    // Add the professional media/link types without disturbing existing text elements.
+    $$(".element-btn").forEach(button => {
+        const type = button.dataset.element;
+        if (!["link","button","image","logo","banner"].includes(type)) return;
+        button.onclick = function(event){
+            event.preventDefault();
+            addProfessionalElement(type);
+        };
+    });
+
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", installProfessionalMediaLinkEngine);
+} else {
+    installProfessionalMediaLinkEngine();
+}
+})();
