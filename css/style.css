@@ -1,0 +1,1080 @@
+/* =========================================================
+   SIGNATURE STUDIO
+   MAIN STYLE
+========================================================= */
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+
+body {
+    font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background: #0b0d12;
+    color: #f5f7fb;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   BUTTON RESET
+========================================================= */
+
+button {
+    border: 0;
+    outline: 0;
+
+    font-family: inherit;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   APP
+========================================================= */
+
+#app {
+    width: 100%;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    background:
+        radial-gradient(
+            circle at top left,
+            rgba(70, 90, 150, 0.12),
+            transparent 35%
+        ),
+        #0b0d12;
+}
+
+
+/* =========================================================
+   TOPBAR
+========================================================= */
+
+.topbar {
+
+    height: 68px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 20px;
+
+    border-bottom: 1px solid #20242d;
+
+    background: rgba(13, 16, 22, 0.96);
+
+    backdrop-filter: blur(20px);
+
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   BRAND
+========================================================= */
+
+.brand {
+
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.brand-logo {
+
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ffffff,
+            #777777
+        );
+
+    color: #080a0e;
+
+    font-size: 12px;
+    font-weight: 900;
+
+    letter-spacing: -0.5px;
+}
+
+
+.brand-info h1 {
+
+    font-size: 15px;
+    line-height: 18px;
+
+    font-weight: 700;
+}
+
+
+.brand-info span {
+
+    display: block;
+
+    margin-top: 2px;
+
+    font-size: 10px;
+
+    color: #777f8d;
+}
+
+
+/* =========================================================
+   TOP ACTIONS
+========================================================= */
+
+.top-actions {
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+.top-btn {
+
+    min-width: 38px;
+    height: 36px;
+
+    padding: 0 14px;
+
+    border: 1px solid #292e38;
+
+    border-radius: 8px;
+
+    background: #151820;
+
+    color: #cfd4de;
+
+    font-size: 12px;
+
+    transition: 0.2s ease;
+}
+
+
+.top-btn:hover {
+
+    background: #202530;
+
+    border-color: #3b4250;
+
+    color: white;
+}
+
+
+.top-btn.primary {
+
+    background: #ffffff;
+
+    color: #090b0f;
+
+    border-color: white;
+
+    font-weight: 700;
+}
+
+
+.top-btn.primary:hover {
+
+    background: #e8e8e8;
+}
+
+
+/* =========================================================
+   WORKSPACE
+========================================================= */
+
+.workspace {
+
+    min-height: 0;
+
+    flex: 1;
+
+    display: grid;
+
+    grid-template-columns:
+        220px
+        minmax(400px, 1fr)
+        280px;
+}
+
+
+/* =========================================================
+   LEFT / RIGHT PANEL
+========================================================= */
+
+.left-panel,
+.right-panel {
+
+    background: #101319;
+
+    border-color: #20242d;
+
+    overflow-y: auto;
+}
+
+
+.left-panel {
+
+    border-right: 1px solid #20242d;
+}
+
+
+.right-panel {
+
+    border-left: 1px solid #20242d;
+}
+
+
+/* =========================================================
+   PANEL TITLE
+========================================================= */
+
+.panel-title {
+
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 0 16px;
+
+    border-bottom: 1px solid #20242d;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    color: #e8ebf0;
+}
+
+
+/* =========================================================
+   ELEMENT GRID
+========================================================= */
+
+.element-grid {
+
+    padding: 14px;
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 8px;
+}
+
+
+.element-btn {
+
+    min-height: 70px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    border: 1px solid #242934;
+
+    border-radius: 10px;
+
+    background: #151820;
+
+    color: #aeb5c2;
+
+    font-size: 10px;
+
+    transition: 0.2s ease;
+}
+
+
+.element-btn:hover {
+
+    background: #1d222c;
+
+    border-color: #3a414e;
+
+    color: white;
+
+    transform: translateY(-1px);
+}
+
+
+.element-icon {
+
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 7px;
+
+    background: #202530;
+
+    color: #ffffff;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   SIDEBAR SECTION
+========================================================= */
+
+.sidebar-section {
+
+    padding: 14px;
+
+    border-top: 1px solid #20242d;
+}
+
+
+.section-title {
+
+    margin-bottom: 10px;
+
+    color: #737b89;
+
+    font-size: 10px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.8px;
+}
+
+
+.sidebar-action,
+.template-open-btn {
+
+    width: 100%;
+
+    height: 38px;
+
+    margin-bottom: 7px;
+
+    border: 1px solid #292e38;
+
+    border-radius: 8px;
+
+    background: #151820;
+
+    color: #c6ccd6;
+
+    font-size: 11px;
+}
+
+
+.sidebar-action:hover,
+.template-open-btn:hover {
+
+    background: #1d222b;
+
+    color: white;
+}
+
+
+/* =========================================================
+   EDITOR AREA
+========================================================= */
+
+.editor-area {
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    background: #0c0f14;
+}
+
+
+/* =========================================================
+   EDITOR TOOLBAR
+========================================================= */
+
+.editor-toolbar {
+
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 16px;
+
+    border-bottom: 1px solid #20242d;
+
+    background: #101319;
+}
+
+
+.toolbar-left {
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+.toolbar-label {
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    color: #dce1e9;
+}
+
+
+.status-dot {
+
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: #62d394;
+}
+
+
+.status-text {
+
+    font-size: 10px;
+
+    color: #727a87;
+}
+
+
+.toolbar-right {
+
+    display: flex;
+    align-items: center;
+
+    gap: 8px;
+
+    font-size: 10px;
+
+    color: #8d95a2;
+}
+
+
+.toolbar-btn {
+
+    width: 28px;
+    height: 28px;
+
+    border: 1px solid #292e38;
+
+    border-radius: 6px;
+
+    background: #151820;
+
+    color: #cdd3dd;
+}
+
+
+/* =========================================================
+   CANVAS WRAPPER
+========================================================= */
+
+.canvas-wrapper {
+
+    flex: 1;
+
+    min-height: 0;
+
+    overflow: auto;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 50px;
+
+    background:
+        linear-gradient(
+            45deg,
+            #0b0e13 25%,
+            #0d1015 25%,
+            #0d1015 50%,
+            #0b0e13 50%,
+            #0b0e13 75%,
+            #0d1015 75%
+        );
+
+    background-size: 20px 20px;
+}
+
+
+/* =========================================================
+   SIGNATURE CANVAS
+========================================================= */
+
+.signature-canvas {
+
+    width: 620px;
+
+    min-height: 260px;
+
+    padding: 32px;
+
+    background: white;
+
+    color: #111111;
+
+    border-radius: 4px;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, 0.45);
+
+    transition:
+        transform 0.2s ease;
+}
+
+
+/* =========================================================
+   SIGNATURE ELEMENT
+========================================================= */
+
+.signature-block {
+
+    position: relative;
+
+    display: block;
+
+    padding: 5px;
+
+    margin: 3px 0;
+
+    border: 1px solid transparent;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.15s ease,
+        background 0.15s ease;
+}
+
+
+.signature-block:hover {
+
+    border-color: #bfc7d4;
+
+    background: rgba(80, 100, 130, 0.04);
+}
+
+
+.signature-block.selected {
+
+    border: 1px dashed #4d83ff;
+
+    background: rgba(77, 131, 255, 0.06);
+}
+
+
+.element-content {
+
+    min-height: 18px;
+
+    outline: none;
+
+    word-break: break-word;
+}
+
+
+/* =========================================================
+   DEFAULT ELEMENT STYLES
+========================================================= */
+
+.signature-block[data-type="heading"]
+.element-content {
+
+    font-size: 26px;
+
+    font-weight: 800;
+
+    color: #111111;
+}
+
+
+.signature-block[data-type="text"]
+.element-content {
+
+    font-size: 14px;
+
+    color: #555555;
+}
+
+
+/* =========================================================
+   EDITOR BOTTOM
+========================================================= */
+
+.editor-bottom {
+
+    height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 16px;
+
+    border-top: 1px solid #20242d;
+
+    background: #101319;
+
+    color: #6f7784;
+
+    font-size: 10px;
+}
+
+
+.editor-bottom button {
+
+    padding: 7px 10px;
+
+    border: 1px solid #292e38;
+
+    border-radius: 6px;
+
+    background: #151820;
+
+    color: #aeb5c0;
+
+    font-size: 10px;
+
+    margin-left: 5px;
+}
+
+
+/* =========================================================
+   PROPERTIES
+========================================================= */
+
+.properties-panel {
+
+    padding: 14px;
+}
+
+
+.empty-properties {
+
+    min-height: 250px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    color: #707987;
+}
+
+
+.empty-icon {
+
+    width: 45px;
+    height: 45px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 12px;
+
+    border-radius: 12px;
+
+    background: #171b23;
+
+    font-size: 18px;
+}
+
+
+.empty-properties h3 {
+
+    margin-bottom: 7px;
+
+    font-size: 12px;
+
+    color: #aeb5c0;
+}
+
+
+.empty-properties p {
+
+    max-width: 190px;
+
+    font-size: 10px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1000;
+}
+
+
+.modal[hidden] {
+
+    display: none;
+}
+
+
+.modal-overlay {
+
+    position: absolute;
+
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.72);
+
+    backdrop-filter: blur(8px);
+}
+
+
+.modal-box {
+
+    position: relative;
+
+    width: min(900px, calc(100% - 30px));
+
+    max-height: calc(100vh - 50px);
+
+    margin: 25px auto;
+
+    overflow: hidden;
+
+    border: 1px solid #2a303b;
+
+    border-radius: 14px;
+
+    background: #11151c;
+
+    box-shadow:
+        0 30px 100px rgba(0, 0, 0, 0.6);
+}
+
+
+.modal-header {
+
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 18px;
+
+    border-bottom: 1px solid #252a34;
+}
+
+
+.modal-header h2 {
+
+    font-size: 14px;
+}
+
+
+.modal-close {
+
+    width: 32px;
+    height: 32px;
+
+    border-radius: 7px;
+
+    background: #1b2028;
+
+    color: #bfc5cf;
+
+    font-size: 18px;
+}
+
+
+.template-grid {
+
+    padding: 20px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 15px;
+
+    overflow-y: auto;
+
+    max-height: calc(100vh - 130px);
+}
+
+
+.template-card {
+
+    min-height: 170px;
+
+    padding: 12px;
+
+    border: 1px solid #292f39;
+
+    border-radius: 10px;
+
+    background: #171b22;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+
+.template-card:hover {
+
+    border-color: #4d83ff;
+
+    transform: translateY(-2px);
+}
+
+
+.template-preview {
+
+    height: 110px;
+
+    margin-bottom: 10px;
+
+    border-radius: 6px;
+
+    background: white;
+}
+
+
+.template-name {
+
+    font-size: 11px;
+
+    color: #d8dde6;
+}
+
+
+/* =========================================================
+   PREVIEW
+========================================================= */
+
+.preview-container {
+
+    min-height: 300px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 40px;
+
+    background: #090c11;
+}
+
+
+.preview-content {
+
+    width: 620px;
+
+    max-width: 100%;
+
+    padding: 30px;
+
+    background: white;
+
+    color: black;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+::-webkit-scrollbar {
+
+    width: 7px;
+    height: 7px;
+}
+
+
+::-webkit-scrollbar-track {
+
+    background: transparent;
+}
+
+
+::-webkit-scrollbar-thumb {
+
+    background: #2a303a;
+
+    border-radius: 10px;
+}
+
+
+::-webkit-scrollbar-thumb:hover {
+
+    background: #3a424e;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1000px) {
+
+    .workspace {
+
+        grid-template-columns:
+            190px
+            minmax(350px, 1fr);
+    }
+
+    .right-panel {
+
+        display: none;
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    body {
+
+        overflow: auto;
+    }
+
+
+    #app {
+
+        min-height: 100vh;
+
+        height: auto;
+    }
+
+
+    .workspace {
+
+        display: block;
+    }
+
+
+    .left-panel {
+
+        border-right: 0;
+
+        border-bottom: 1px solid #20242d;
+    }
+
+
+    .element-grid {
+
+        grid-template-columns:
+            repeat(5, 1fr);
+    }
+
+
+    .canvas-wrapper {
+
+        min-height: 500px;
+
+        padding: 25px;
+    }
+
+
+    .signature-canvas {
+
+        width: 620px;
+
+        transform-origin: top center;
+    }
+
+
+    .topbar {
+
+        height: auto;
+
+        min-height: 65px;
+
+        gap: 10px;
+    }
+
+
+    .brand-info {
+
+        display: none;
+    }
+
+
+    .top-actions {
+
+        flex-wrap: wrap;
+    }
+
+      }
