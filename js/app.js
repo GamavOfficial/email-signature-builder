@@ -194,6 +194,7 @@ function setupElementButtons() {
 
 /* =========================================================
    ADD ELEMENT
+   PART 1 — PARAGRAPH / HEADING CORE
 ========================================================= */
 
 function addElement(type) {
@@ -201,15 +202,50 @@ function addElement(type) {
     const canvas =
         $("#signatureCanvas");
 
+    if (!canvas) {
+        return;
+    }
+
+
+    /* -----------------------------------------------------
+       Backward compatibility
+
+       Old button may still send:
+       "text"
+
+       New system uses:
+       "paragraph"
+    ----------------------------------------------------- */
+
+    if (type === "text") {
+        type = "paragraph";
+    }
+
+
+    /* -----------------------------------------------------
+       Create main element
+    ----------------------------------------------------- */
 
     const element =
         document.createElement("div");
 
 
+    /* -----------------------------------------------------
+       Unique ID
+    ----------------------------------------------------- */
+
     const id =
         "element-" +
-        Date.now();
+        Date.now() +
+        "-" +
+        Math.random()
+            .toString(36)
+            .slice(2, 7);
 
+
+    /* -----------------------------------------------------
+       Base classes / data
+    ----------------------------------------------------- */
 
     element.className =
         "signature-block";
@@ -229,6 +265,10 @@ function addElement(type) {
     );
 
 
+    /* -----------------------------------------------------
+       Content element
+    ----------------------------------------------------- */
+
     const content =
         document.createElement("div");
 
@@ -237,90 +277,181 @@ function addElement(type) {
         "element-content";
 
 
+    content.style.boxSizing =
+        "border-box";
+
+
+    /* -----------------------------------------------------
+       Element type
+    ----------------------------------------------------- */
+
     switch (type) {
 
-        case "text":
+
+        /* =================================================
+           PARAGRAPH
+        ================================================= */
+
+        case "paragraph":
 
             content.textContent =
-                "New Text";
+                "New Paragraph";
+
+
+            content.style.fontSize =
+                "14px";
+
+
+            content.style.color =
+                "#555555";
+
+
+            content.style.lineHeight =
+                "1.5";
+
 
             break;
 
+
+        /* =================================================
+           HEADING
+        ================================================= */
 
         case "heading":
 
             content.textContent =
                 "New Heading";
 
+
+            content.style.fontSize =
+                "26px";
+
+
+            content.style.fontWeight =
+                "800";
+
+
+            content.style.color =
+                "#111111";
+
+
+            content.style.lineHeight =
+                "1.2";
+
+
             break;
 
+
+        /* =================================================
+           LINK
+
+           Professional Link Engine will replace this
+           element when the Link button is used.
+        ================================================= */
 
         case "link":
 
             content.textContent =
                 "Click Here";
 
-            break;
-
-
-        case "image":
-
-            content.textContent =
-                "Image";
 
             break;
 
+
+        /* =================================================
+           LOGO
+
+           Professional Media Engine handles the
+           actual image creation.
+        ================================================= */
 
         case "logo":
 
             content.textContent =
                 "Logo";
 
+
             break;
 
+
+        /* =================================================
+           BANNER
+
+           Professional Media Engine handles the
+           actual image creation.
+        ================================================= */
 
         case "banner":
 
             content.textContent =
                 "Banner";
 
+
             break;
 
+
+        /* =================================================
+           SOCIAL MEDIA
+        ================================================= */
 
         case "social":
 
             content.textContent =
                 "Social Media";
 
-            break;
-
-
-        case "divider":
-
-            content.textContent =
-                "────────────";
 
             break;
 
+
+        /* =================================================
+           BUTTON
+
+           Professional Link Engine handles the
+           actual button creation.
+        ================================================= */
 
         case "button":
 
             content.textContent =
                 "Button";
 
+
             break;
 
+
+        /* =================================================
+           DIVIDER
+        ================================================= */
+
+        case "divider":
+
+            content.textContent =
+                "────────────";
+
+
+            break;
+
+
+        /* =================================================
+           SPACER
+        ================================================= */
 
         case "spacer":
 
             content.innerHTML =
                 "&nbsp;";
 
+
             content.style.height =
                 "25px";
 
+
             break;
 
+
+        /* =================================================
+           UNKNOWN ELEMENT
+        ================================================= */
 
         default:
 
@@ -330,22 +461,51 @@ function addElement(type) {
     }
 
 
+    /* -----------------------------------------------------
+       Add content to block
+    ----------------------------------------------------- */
+
     element.appendChild(
         content
     );
 
+
+    /* -----------------------------------------------------
+       Add block to canvas
+    ----------------------------------------------------- */
 
     canvas.appendChild(
         element
     );
 
 
+    /* -----------------------------------------------------
+       Select newly created element
+    ----------------------------------------------------- */
+
     selectElement(
         element
     );
 
 
+    /* -----------------------------------------------------
+       Save undo / redo history
+    ----------------------------------------------------- */
+
     saveHistory();
+
+
+    /* -----------------------------------------------------
+       Status
+    ----------------------------------------------------- */
+
+    if (typeof updateStatus === "function") {
+
+        updateStatus(
+            `${type.charAt(0).toUpperCase() + type.slice(1)} added`
+        );
+
+    }
 
 }
 
