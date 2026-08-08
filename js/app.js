@@ -385,14 +385,75 @@ function renderProperties(element) {
     const type =
         element.dataset.type;
 
-
     const content =
         element.querySelector(
             ".element-content"
         );
 
+    if (!content) {
+        return;
+    }
+
+    const computed =
+        getComputedStyle(content);
+
+    const fontSize =
+        parseInt(
+            computed.fontSize
+        ) || 14;
+
+    const letterSpacing =
+        parseFloat(
+            computed.letterSpacing
+        ) || 0;
+
+    const lineHeight =
+        computed.lineHeight === "normal"
+            ? 1.4
+            : parseFloat(
+                computed.lineHeight
+            ) || 1.4;
+
+    const padding =
+        parseInt(
+            computed.paddingTop
+        ) || 0;
+
+    const margin =
+        parseInt(
+            computed.marginTop
+        ) || 0;
+
+    const radius =
+        parseInt(
+            computed.borderRadius
+        ) || 0;
+
+    const textColor =
+        rgbToHex(
+            computed.color
+        );
+
+    const backgroundColor =
+        rgbToHex(
+            computed.backgroundColor
+        );
+
+    const fontWeight =
+        computed.fontWeight;
+
+    const fontStyle =
+        computed.fontStyle;
+
+    const decoration =
+        computed.textDecorationLine;
+
 
     $("#propertiesPanel").innerHTML = `
+
+        <!-- =============================================
+             ELEMENT
+        ============================================== -->
 
         <div class="property-section">
 
@@ -407,6 +468,10 @@ function renderProperties(element) {
         </div>
 
 
+        <!-- =============================================
+             CONTENT
+        ============================================== -->
+
         <div class="property-section">
 
             <label>
@@ -416,10 +481,77 @@ function renderProperties(element) {
             <textarea
                 id="propertyContent"
                 rows="4"
-            >${content.innerText}</textarea>
+            >${escapeHTML(
+                content.innerText
+            )}</textarea>
 
         </div>
 
+
+        <!-- =============================================
+             FONT FAMILY
+        ============================================== -->
+
+        <div class="property-section">
+
+            <label>
+                Font Family
+            </label>
+
+            <select
+                id="fontFamilyInput"
+            >
+
+                <option
+                    value="Arial, sans-serif"
+                >
+                    Arial
+                </option>
+
+                <option
+                    value="Helvetica, sans-serif"
+                >
+                    Helvetica
+                </option>
+
+                <option
+                    value="Verdana, sans-serif"
+                >
+                    Verdana
+                </option>
+
+                <option
+                    value="Georgia, serif"
+                >
+                    Georgia
+                </option>
+
+                <option
+                    value="Times New Roman, serif"
+                >
+                    Times New Roman
+                </option>
+
+                <option
+                    value="Courier New, monospace"
+                >
+                    Courier New
+                </option>
+
+                <option
+                    value="Trebuchet MS, sans-serif"
+                >
+                    Trebuchet MS
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- =============================================
+             FONT SIZE
+        ============================================== -->
 
         <div class="property-section">
 
@@ -427,16 +559,105 @@ function renderProperties(element) {
                 Font Size
             </label>
 
-            <input
-                type="number"
-                id="fontSizeInput"
-                value="${parseInt(
-                    getComputedStyle(content).fontSize
-                ) || 14}"
-            >
+            <div class="stepper">
+
+                <button
+                    type="button"
+                    data-text-action="decrease"
+                >
+                    −
+                </button>
+
+                <input
+                    type="number"
+                    id="fontSizeInput"
+                    min="6"
+                    max="120"
+                    value="${fontSize}"
+                >
+
+                <button
+                    type="button"
+                    data-text-action="increase"
+                >
+                    +
+                </button>
+
+            </div>
 
         </div>
 
+
+        <!-- =============================================
+             TEXT FORMATTING
+        ============================================== -->
+
+        <div class="property-section">
+
+            <label>
+                Formatting
+            </label>
+
+            <div class="text-format-grid">
+
+                <button
+                    type="button"
+                    class="text-format-btn ${
+                        fontWeight >= 600
+                            ? "active"
+                            : ""
+                    }"
+                    data-text-action="bold"
+                    title="Bold"
+                >
+                    B
+                </button>
+
+                <button
+                    type="button"
+                    class="text-format-btn ${
+                        fontStyle === "italic"
+                            ? "active"
+                            : ""
+                    }"
+                    data-text-action="italic"
+                    title="Italic"
+                >
+                    I
+                </button>
+
+                <button
+                    type="button"
+                    class="text-format-btn ${
+                        decoration.includes(
+                            "underline"
+                        )
+                            ? "active"
+                            : ""
+                    }"
+                    data-text-action="underline"
+                    title="Underline"
+                >
+                    U
+                </button>
+
+                <button
+                    type="button"
+                    class="text-format-btn"
+                    data-text-action="reset"
+                    title="Reset"
+                >
+                    ↺
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- =============================================
+             TEXT COLOR
+        ============================================== -->
 
         <div class="property-section">
 
@@ -444,16 +665,56 @@ function renderProperties(element) {
                 Text Color
             </label>
 
-            <input
-                type="color"
-                id="textColorInput"
-                value="${rgbToHex(
-                    getComputedStyle(content).color
-                )}"
-            >
+            <div class="color-control">
+
+                <input
+                    type="color"
+                    id="textColorInput"
+                    value="${textColor}"
+                >
+
+                <div
+                    class="color-value"
+                    id="textColorValue"
+                >
+                    ${textColor.toUpperCase()}
+                </div>
+
+            </div>
 
         </div>
 
+
+        <!-- =============================================
+             BACKGROUND COLOR
+        ============================================== -->
+
+        <div class="property-section">
+
+            <label>
+                Background Color
+            </label>
+
+            <div class="color-control">
+
+                <input
+                    type="color"
+                    id="backgroundColorInput"
+                    value="${backgroundColor}"
+                >
+
+                <div class="color-value">
+                    ${backgroundColor.toUpperCase()}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =============================================
+             ALIGNMENT
+        ============================================== -->
 
         <div class="property-section">
 
@@ -461,26 +722,342 @@ function renderProperties(element) {
                 Alignment
             </label>
 
-            <select id="textAlignInput">
+            <div class="alignment-grid">
 
-                <option value="left">
-                    Left
-                </option>
+                <button
+                    type="button"
+                    class="align-btn ${
+                        computed.textAlign === "left"
+                            ? "active"
+                            : ""
+                    }"
+                    data-text-action="align-left"
+                >
+                    ⬅
+                </button>
 
-                <option value="center">
-                    Center
-                </option>
+                <button
+                    type="button"
+                    class="align-btn ${
+                        computed.textAlign === "center"
+                            ? "active"
+                            : ""
+                    }"
+                    data-text-action="align-center"
+                >
+                    ↔
+                </button>
 
-                <option value="right">
-                    Right
-                </option>
+                <button
+                    type="button"
+                    class="align-btn ${
+                        computed.textAlign === "right"
+                            ? "active"
+                            : ""
+                    }"
+                    data-text-action="align-right"
+                >
+                    ➡
+                </button>
 
-            </select>
+            </div>
+
+        </div>
+
+
+        <!-- =============================================
+             LETTER SPACING
+        ============================================== -->
+
+        <div class="property-section">
+
+            <label>
+                Letter Spacing
+            </label>
+
+            <div class="range-row">
+
+                <input
+                    type="range"
+                    id="letterSpacingInput"
+                    min="-2"
+                    max="10"
+                    step="0.5"
+                    value="${letterSpacing}"
+                >
+
+                <span
+                    class="range-value"
+                    id="letterSpacingValue"
+                >
+                    ${letterSpacing}px
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- =============================================
+             LINE HEIGHT
+        ============================================== -->
+
+        <div class="property-section">
+
+            <label>
+                Line Height
+            </label>
+
+            <div class="range-row">
+
+                <input
+                    type="range"
+                    id="lineHeightInput"
+                    min="0.8"
+                    max="3"
+                    step="0.1"
+                    value="${lineHeight}"
+                >
+
+                <span
+                    class="range-value"
+                    id="lineHeightValue"
+                >
+                    ${lineHeight}
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- =============================================
+             SPACING
+        ============================================== -->
+
+        <div class="property-section">
+
+            <label>
+                Spacing
+            </label>
+
+            <div class="property-two-column">
+
+                <div>
+
+                    <label>
+                        Padding
+                    </label>
+
+                    <input
+                        type="number"
+                        id="paddingInput"
+                        min="0"
+                        max="100"
+                        value="${padding}"
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label>
+                        Margin
+                    </label>
+
+                    <input
+                        type="number"
+                        id="marginInput"
+                        min="0"
+                        max="100"
+                        value="${margin}"
+                    >
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =============================================
+             BORDER RADIUS
+        ============================================== -->
+
+        <div class="property-section">
+
+            <label>
+                Border Radius
+            </label>
+
+            <div class="range-row">
+
+                <input
+                    type="range"
+                    id="radiusInput"
+                    min="0"
+                    max="100"
+                    step="1"
+                    value="${radius}"
+                >
+
+                <span
+                    class="range-value"
+                    id="radiusValue"
+                >
+                    ${radius}px
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <!-- =============================================
+             ACTIONS
+        ============================================== -->
+
+        <div class="property-section">
+
+            <div class="property-actions">
+
+                <button
+                    type="button"
+                    class="property-action-btn"
+                    data-text-action="reset"
+                >
+                    Reset Style
+                </button>
+
+                <button
+                    type="button"
+                    class="property-action-btn danger"
+                    id="propertyDeleteBtn"
+                >
+                    Delete
+                </button>
+
+            </div>
 
         </div>
 
     `;
 
+
+    /* =====================================================
+       FONT FAMILY VALUE
+    ===================================================== */
+
+    const fontFamilyInput =
+        $("#fontFamilyInput");
+
+    if (fontFamilyInput) {
+
+        fontFamilyInput.value =
+            computed.fontFamily;
+
+    }
+
+
+    /* =====================================================
+       RANGE LIVE VALUES
+    ===================================================== */
+
+    const letterInput =
+        $("#letterSpacingInput");
+
+    const letterValue =
+        $("#letterSpacingValue");
+
+    if (letterInput && letterValue) {
+
+        letterInput.addEventListener(
+            "input",
+            function () {
+
+                letterValue.textContent =
+                    this.value + "px";
+
+            }
+        );
+
+    }
+
+
+    const lineInput =
+        $("#lineHeightInput");
+
+    const lineValue =
+        $("#lineHeightValue");
+
+    if (lineInput && lineValue) {
+
+        lineInput.addEventListener(
+            "input",
+            function () {
+
+                lineValue.textContent =
+                    this.value;
+
+            }
+        );
+
+    }
+
+
+    const radiusInput =
+        $("#radiusInput");
+
+    const radiusValue =
+        $("#radiusValue");
+
+    if (radiusInput && radiusValue) {
+
+        radiusInput.addEventListener(
+            "input",
+            function () {
+
+                radiusValue.textContent =
+                    this.value + "px";
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       DELETE FROM PROPERTY PANEL
+    ===================================================== */
+
+    const deleteButton =
+        $("#propertyDeleteBtn");
+
+    if (deleteButton) {
+
+        deleteButton.addEventListener(
+            "click",
+            function () {
+
+                if (
+                    typeof deleteSelected ===
+                    "function"
+                ) {
+
+                    deleteSelected();
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       OLD PROPERTY EVENTS
+    ===================================================== */
 
     bindPropertyEvents(
         element,
@@ -493,6 +1070,17 @@ function renderProperties(element) {
 /* =========================================================
    PROPERTY EVENTS
 ========================================================= */
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
 
 function bindPropertyEvents(
     element,
