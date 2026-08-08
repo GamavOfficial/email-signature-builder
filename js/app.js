@@ -1242,27 +1242,27 @@ function escapeHTML(value) {
 
 }
 
+/* =========================================================
+   PROPERTY EVENTS
+   PART 3 — PARAGRAPH + HEADING
+========================================================= */
+
 function bindPropertyEvents(
     element,
     content
 ) {
 
+    if (!element || !content) {
+        return;
+    }
+
+
+    /* =====================================================
+       CONTENT
+    ===================================================== */
 
     const contentInput =
         $("#propertyContent");
-
-
-    const fontSizeInput =
-        $("#fontSizeInput");
-
-
-    const colorInput =
-        $("#textColorInput");
-
-
-    const alignInput =
-        $("#textAlignInput");
-
 
     if (contentInput) {
 
@@ -1281,15 +1281,21 @@ function bindPropertyEvents(
     }
 
 
-    if (fontSizeInput) {
+    /* =====================================================
+       FONT FAMILY
+    ===================================================== */
 
-        fontSizeInput.addEventListener(
-            "input",
+    const fontFamilyInput =
+        $("#fontFamilyInput");
+
+    if (fontFamilyInput) {
+
+        fontFamilyInput.addEventListener(
+            "change",
             () => {
 
-                content.style.fontSize =
-                    fontSizeInput.value +
-                    "px";
+                content.style.fontFamily =
+                    fontFamilyInput.value;
 
                 saveHistory();
 
@@ -1297,6 +1303,134 @@ function bindPropertyEvents(
         );
 
     }
+
+
+    /* =====================================================
+       FONT SIZE
+    ===================================================== */
+
+    const fontSizeInput =
+        $("#fontSizeInput");
+
+
+    function setFontSize(value) {
+
+        let size =
+            parseInt(value, 10);
+
+
+        if (
+            Number.isNaN(size)
+        ) {
+            size = 14;
+        }
+
+
+        size =
+            Math.max(
+                6,
+                Math.min(
+                    120,
+                    size
+                )
+            );
+
+
+        content.style.fontSize =
+            size + "px";
+
+
+        if (fontSizeInput) {
+            fontSizeInput.value =
+                size;
+        }
+
+
+        saveHistory();
+
+    }
+
+
+    if (fontSizeInput) {
+
+        fontSizeInput.addEventListener(
+            "input",
+            () => {
+
+                setFontSize(
+                    fontSizeInput.value
+                );
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       FONT SIZE + / -
+    ===================================================== */
+
+    $$(
+        '[data-text-action="increase"]'
+    ).forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                const current =
+                    parseInt(
+                        getComputedStyle(
+                            content
+                        ).fontSize,
+                        10
+                    ) || 14;
+
+
+                setFontSize(
+                    current + 1
+                );
+
+            }
+        );
+
+    });
+
+
+    $$(
+        '[data-text-action="decrease"]'
+    ).forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                const current =
+                    parseInt(
+                        getComputedStyle(
+                            content
+                        ).fontSize,
+                        10
+                    ) || 14;
+
+
+                setFontSize(
+                    current - 1
+                );
+
+            }
+        );
+
+    });
+
+
+    /* =====================================================
+       TEXT COLOR
+    ===================================================== */
+
+    const colorInput =
+        $("#textColorInput");
 
 
     if (colorInput) {
@@ -1308,6 +1442,20 @@ function bindPropertyEvents(
                 content.style.color =
                     colorInput.value;
 
+
+                const value =
+                    $("#textColorValue");
+
+
+                if (value) {
+
+                    value.textContent =
+                        colorInput.value
+                            .toUpperCase();
+
+                }
+
+
                 saveHistory();
 
             }
@@ -1316,20 +1464,23 @@ function bindPropertyEvents(
     }
 
 
-    if (alignInput) {
+    /* =====================================================
+       BACKGROUND COLOR
+    ===================================================== */
 
-        alignInput.value =
-            getComputedStyle(
-                content
-            ).textAlign;
+    const backgroundInput =
+        $("#backgroundColorInput");
 
 
-        alignInput.addEventListener(
-            "change",
+    if (backgroundInput) {
+
+        backgroundInput.addEventListener(
+            "input",
             () => {
 
-                content.style.textAlign =
-                    alignInput.value;
+                content.style.backgroundColor =
+                    backgroundInput.value;
+
 
                 saveHistory();
 
@@ -1337,6 +1488,478 @@ function bindPropertyEvents(
         );
 
     }
+
+
+    /* =====================================================
+       BOLD
+    ===================================================== */
+
+    const boldButton =
+        document.querySelector(
+            '[data-text-action="bold"]'
+        );
+
+
+    if (boldButton) {
+
+        boldButton.addEventListener(
+            "click",
+            () => {
+
+                const current =
+                    getComputedStyle(
+                        content
+                    ).fontWeight;
+
+
+                const isBold =
+                    parseInt(
+                        current,
+                        10
+                    ) >= 600;
+
+
+                content.style.fontWeight =
+                    isBold
+                        ? "400"
+                        : "700";
+
+
+                boldButton.classList.toggle(
+                    "active",
+                    !isBold
+                );
+
+
+                saveHistory();
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       ITALIC
+    ===================================================== */
+
+    const italicButton =
+        document.querySelector(
+            '[data-text-action="italic"]'
+        );
+
+
+    if (italicButton) {
+
+        italicButton.addEventListener(
+            "click",
+            () => {
+
+                const isItalic =
+                    getComputedStyle(
+                        content
+                    ).fontStyle === "italic";
+
+
+                content.style.fontStyle =
+                    isItalic
+                        ? "normal"
+                        : "italic";
+
+
+                italicButton.classList.toggle(
+                    "active",
+                    !isItalic
+                );
+
+
+                saveHistory();
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       UNDERLINE
+    ===================================================== */
+
+    const underlineButton =
+        document.querySelector(
+            '[data-text-action="underline"]'
+        );
+
+
+    if (underlineButton) {
+
+        underlineButton.addEventListener(
+            "click",
+            () => {
+
+                const decoration =
+                    getComputedStyle(
+                        content
+                    ).textDecorationLine;
+
+
+                const isUnderline =
+                    decoration.includes(
+                        "underline"
+                    );
+
+
+                content.style.textDecoration =
+                    isUnderline
+                        ? "none"
+                        : "underline";
+
+
+                underlineButton.classList.toggle(
+                    "active",
+                    !isUnderline
+                );
+
+
+                saveHistory();
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       ALIGNMENT
+    ===================================================== */
+
+    const alignmentActions = [
+        "left",
+        "center",
+        "right"
+    ];
+
+
+    alignmentActions.forEach(
+        alignment => {
+
+            const button =
+                document.querySelector(
+                    `[data-text-action="align-${alignment}"]`
+                );
+
+
+            if (!button) {
+                return;
+            }
+
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    content.style.textAlign =
+                        alignment;
+
+
+                    $$(
+                        ".align-btn"
+                    ).forEach(
+                        item => {
+
+                            item.classList.remove(
+                                "active"
+                            );
+
+                        }
+                    );
+
+
+                    button.classList.add(
+                        "active"
+                    );
+
+
+                    saveHistory();
+
+                }
+            );
+
+        }
+    );
+
+
+    /* =====================================================
+       LETTER SPACING
+    ===================================================== */
+
+    const letterInput =
+        $("#letterSpacingInput");
+
+
+    const letterValue =
+        $("#letterSpacingValue");
+
+
+    if (letterInput) {
+
+        letterInput.addEventListener(
+            "input",
+            () => {
+
+                const value =
+                    parseFloat(
+                        letterInput.value
+                    ) || 0;
+
+
+                content.style.letterSpacing =
+                    value + "px";
+
+
+                if (letterValue) {
+
+                    letterValue.textContent =
+                        value + "px";
+
+                }
+
+
+                saveHistory();
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       LINE HEIGHT
+    ===================================================== */
+
+    const lineInput =
+        $("#lineHeightInput");
+
+
+    const lineValue =
+        $("#lineHeightValue");
+
+
+    if (lineInput) {
+
+        lineInput.addEventListener(
+            "input",
+            () => {
+
+                const value =
+                    parseFloat(
+                        lineInput.value
+                    ) || 1.4;
+
+
+                content.style.lineHeight =
+                    value;
+
+
+                if (lineValue) {
+
+                    lineValue.textContent =
+                        value;
+
+                }
+
+
+                saveHistory();
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       PADDING
+    ===================================================== */
+
+    const paddingInput =
+        $("#paddingInput");
+
+
+    if (paddingInput) {
+
+        paddingInput.addEventListener(
+            "input",
+            () => {
+
+                const value =
+                    Math.max(
+                        0,
+                        parseInt(
+                            paddingInput.value,
+                            10
+                        ) || 0
+                    );
+
+
+                content.style.padding =
+                    value + "px";
+
+
+                saveHistory();
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       MARGIN
+    ===================================================== */
+
+    const marginInput =
+        $("#marginInput");
+
+
+    if (marginInput) {
+
+        marginInput.addEventListener(
+            "input",
+            () => {
+
+                const value =
+                    Math.max(
+                        0,
+                        parseInt(
+                            marginInput.value,
+                            10
+                        ) || 0
+                    );
+
+
+                content.style.margin =
+                    value + "px";
+
+
+                saveHistory();
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       BORDER RADIUS
+    ===================================================== */
+
+    const radiusInput =
+        $("#radiusInput");
+
+
+    const radiusValue =
+        $("#radiusValue");
+
+
+    if (radiusInput) {
+
+        radiusInput.addEventListener(
+            "input",
+            () => {
+
+                const value =
+                    Math.max(
+                        0,
+                        parseInt(
+                            radiusInput.value,
+                            10
+                        ) || 0
+                    );
+
+
+                content.style.borderRadius =
+                    value + "px";
+
+
+                if (radiusValue) {
+
+                    radiusValue.textContent =
+                        value + "px";
+
+                }
+
+
+                saveHistory();
+
+            }
+        );
+
+    }
+
+
+    /* =====================================================
+       RESET STYLE
+    ===================================================== */
+
+    $$(
+        '[data-text-action="reset"]'
+    ).forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                content.style.fontFamily =
+                    "";
+
+                content.style.fontSize =
+                    "";
+
+                content.style.fontWeight =
+                    "";
+
+                content.style.fontStyle =
+                    "";
+
+                content.style.textDecoration =
+                    "";
+
+                content.style.color =
+                    "";
+
+                content.style.backgroundColor =
+                    "";
+
+                content.style.textAlign =
+                    "";
+
+                content.style.letterSpacing =
+                    "";
+
+                content.style.lineHeight =
+                    "";
+
+                content.style.padding =
+                    "";
+
+                content.style.margin =
+                    "";
+
+                content.style.borderRadius =
+                    "";
+
+
+                saveHistory();
+
+
+                renderProperties(
+                    element
+                );
+
+            }
+        );
+
+    });
 
 }
 
