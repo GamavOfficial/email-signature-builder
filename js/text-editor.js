@@ -1,36 +1,12 @@
 /* =========================================================
-   PART 2
-   ADVANCED TEXT EDITOR
+   SIGNATURE STUDIO
+   PART 2-C
+   ADVANCED TEXT EDITOR ENGINE
 ========================================================= */
 
 (function () {
 
     "use strict";
-
-
-    /* =====================================================
-       WAIT FOR APP
-    ===================================================== */
-
-    function ready() {
-
-        if (
-            typeof App === "undefined"
-        ) {
-
-            setTimeout(
-                ready,
-                100
-            );
-
-            return;
-
-        }
-
-
-        initializeTextEditor();
-
-    }
 
 
     /* =====================================================
@@ -44,24 +20,61 @@
             handleEditorClick
         );
 
-
         document.addEventListener(
             "input",
             handleEditorInput
         );
-
 
         document.addEventListener(
             "change",
             handleEditorChange
         );
 
-
         enableCanvasEditing();
 
-
         console.log(
-            "Part 2 Text Editor loaded"
+            "Part 2-C Advanced Text Editor loaded"
+        );
+
+    }
+
+
+    /* =====================================================
+       SELECTED ELEMENT
+    ===================================================== */
+
+    function getSelectedElement() {
+
+        if (
+            typeof App !== "undefined" &&
+            App.selectedElement
+        ) {
+
+            return App.selectedElement;
+
+        }
+
+        return document.querySelector(
+            ".signature-block.selected"
+        );
+
+    }
+
+
+    /* =====================================================
+       CONTENT ELEMENT
+    ===================================================== */
+
+    function getContentElement(
+        element
+    ) {
+
+        if (!element) {
+            return null;
+        }
+
+        return element.querySelector(
+            ".element-content"
         );
 
     }
@@ -73,56 +86,41 @@
 
     function handleEditorClick(event) {
 
-        const button =
+        const control =
             event.target.closest(
                 "[data-text-action]"
             );
 
-
-        if (!button) {
-
+        if (!control) {
             return;
-
         }
-
-
-        const action =
-            button.dataset.textAction;
-
 
         const element =
             getSelectedElement();
 
-
         if (!element) {
-
             return;
-
         }
-
 
         const content =
             getContentElement(
                 element
             );
 
-
         if (!content) {
-
             return;
-
         }
+
+        const action =
+            control.dataset.textAction;
 
 
         switch (action) {
 
             case "bold":
 
-                toggleStyle(
-                    content,
-                    "fontWeight",
-                    "700",
-                    "400"
+                toggleBold(
+                    content
                 );
 
                 break;
@@ -130,11 +128,8 @@
 
             case "italic":
 
-                toggleStyle(
-                    content,
-                    "fontStyle",
-                    "italic",
-                    "normal"
+                toggleItalic(
+                    content
                 );
 
                 break;
@@ -142,7 +137,7 @@
 
             case "underline":
 
-                toggleDecoration(
+                toggleUnderline(
                     content
                 );
 
@@ -204,10 +199,9 @@
         }
 
 
-        updatePropertyUI(
+        refreshProperties(
             element
         );
-
 
         saveEditorHistory();
 
@@ -224,6 +218,10 @@
             event.target;
 
 
+        /* -----------------------------------------------
+           CONTENT
+        ------------------------------------------------ */
+
         if (
             target.id ===
             "propertyContent"
@@ -232,28 +230,32 @@
             const element =
                 getSelectedElement();
 
-
             if (!element) {
-
                 return;
-
             }
-
 
             const content =
                 getContentElement(
                     element
                 );
 
+            if (!content) {
+                return;
+            }
 
             content.textContent =
                 target.value;
 
-
             saveEditorHistory();
+
+            return;
 
         }
 
+
+        /* -----------------------------------------------
+           FONT SIZE
+        ------------------------------------------------ */
 
         if (
             target.id ===
@@ -267,6 +269,10 @@
         }
 
 
+        /* -----------------------------------------------
+           LETTER SPACING
+        ------------------------------------------------ */
+
         if (
             target.id ===
             "letterSpacingInput"
@@ -277,8 +283,17 @@
                 target.value + "px"
             );
 
+            updateRangeValue(
+                "letterSpacingValue",
+                target.value + "px"
+            );
+
         }
 
+
+        /* -----------------------------------------------
+           LINE HEIGHT
+        ------------------------------------------------ */
 
         if (
             target.id ===
@@ -290,8 +305,17 @@
                 target.value
             );
 
+            updateRangeValue(
+                "lineHeightValue",
+                target.value
+            );
+
         }
 
+
+        /* -----------------------------------------------
+           PADDING
+        ------------------------------------------------ */
 
         if (
             target.id ===
@@ -306,6 +330,10 @@
         }
 
 
+        /* -----------------------------------------------
+           MARGIN
+        ------------------------------------------------ */
+
         if (
             target.id ===
             "marginInput"
@@ -319,6 +347,10 @@
         }
 
 
+        /* -----------------------------------------------
+           BORDER RADIUS
+        ------------------------------------------------ */
+
         if (
             target.id ===
             "radiusInput"
@@ -329,10 +361,12 @@
                 target.value + "px"
             );
 
+            updateRangeValue(
+                "radiusValue",
+                target.value + "px"
+            );
+
         }
-
-
-        updateSelectedProperties();
 
     }
 
@@ -347,6 +381,10 @@
             event.target;
 
 
+        /* -----------------------------------------------
+           FONT FAMILY
+        ------------------------------------------------ */
+
         if (
             target.id ===
             "fontFamilyInput"
@@ -360,6 +398,10 @@
         }
 
 
+        /* -----------------------------------------------
+           TEXT COLOR
+        ------------------------------------------------ */
+
         if (
             target.id ===
             "textColorInput"
@@ -371,11 +413,16 @@
             );
 
             updateColorValue(
+                "textColorValue",
                 target.value
             );
 
         }
 
+
+        /* -----------------------------------------------
+           BACKGROUND COLOR
+        ------------------------------------------------ */
 
         if (
             target.id ===
@@ -390,101 +437,146 @@
         }
 
 
-        if (
-            target.id ===
-            "textAlignInput"
-        ) {
-
-            applyStyle(
-                "textAlign",
-                target.value
-            );
-
-        }
-
-
-        updateSelectedProperties();
-
         saveEditorHistory();
 
     }
 
 
     /* =====================================================
-       GET SELECTED ELEMENT
+       FONT SIZE
     ===================================================== */
 
-    function getSelectedElement() {
-
-        if (
-            typeof App !==
-            "undefined" &&
-            App.selectedElement
-        ) {
-
-            return App.selectedElement;
-
-        }
-
-
-        return document.querySelector(
-            ".signature-block.selected"
-        );
-
-    }
-
-
-    /* =====================================================
-       GET CONTENT
-    ===================================================== */
-
-    function getContentElement(
-        element
-    ) {
-
-        return element.querySelector(
-            ".element-content"
-        );
-
-    }
-
-
-    /* =====================================================
-       STYLE HELPERS
-    ===================================================== */
-
-    function toggleStyle(
+    function changeFontSize(
         element,
-        property,
-        activeValue,
-        normalValue
+        amount
     ) {
 
-        if (
-            element.style[property] ===
-            activeValue
-        ) {
+        const current =
+            parseFloat(
+                getComputedStyle(
+                    element
+                ).fontSize
+            ) || 14;
 
-            element.style[property] =
-                normalValue;
+        const next =
+            Math.max(
+                6,
+                Math.min(
+                    120,
+                    current + amount
+                )
+            );
 
-        } else {
-
-            element.style[property] =
-                activeValue;
-
-        }
+        element.style.fontSize =
+            next + "px";
 
     }
 
 
-    function toggleDecoration(
+    function applyFontSize(
+        value
+    ) {
+
+        let size =
+            parseFloat(value);
+
+        if (
+            Number.isNaN(size)
+        ) {
+
+            return;
+
+        }
+
+        size =
+            Math.max(
+                6,
+                Math.min(
+                    120,
+                    size
+                )
+            );
+
+        applyStyle(
+            "fontSize",
+            size + "px"
+        );
+
+    }
+
+
+    /* =====================================================
+       BOLD
+    ===================================================== */
+
+    function toggleBold(
         element
     ) {
 
         const current =
-            element.style.textDecoration;
+            getComputedStyle(
+                element
+            ).fontWeight;
 
+        if (
+            parseInt(current) >= 600
+        ) {
+
+            element.style.fontWeight =
+                "400";
+
+        } else {
+
+            element.style.fontWeight =
+                "700";
+
+        }
+
+    }
+
+
+    /* =====================================================
+       ITALIC
+    ===================================================== */
+
+    function toggleItalic(
+        element
+    ) {
+
+        const current =
+            getComputedStyle(
+                element
+            ).fontStyle;
+
+        if (
+            current === "italic"
+        ) {
+
+            element.style.fontStyle =
+                "normal";
+
+        } else {
+
+            element.style.fontStyle =
+                "italic";
+
+        }
+
+    }
+
+
+    /* =====================================================
+       UNDERLINE
+    ===================================================== */
+
+    function toggleUnderline(
+        element
+    ) {
+
+        const current =
+            getComputedStyle(
+                element
+            ).textDecorationLine;
 
         if (
             current.includes(
@@ -505,65 +597,9 @@
     }
 
 
-    function changeFontSize(
-        element,
-        amount
-    ) {
-
-        const current =
-            parseFloat(
-                getComputedStyle(
-                    element
-                ).fontSize
-            ) || 14;
-
-
-        const next =
-            Math.max(
-                6,
-                Math.min(
-                    120,
-                    current + amount
-                )
-            );
-
-
-        element.style.fontSize =
-            next + "px";
-
-    }
-
-
-    function applyFontSize(
-        value
-    ) {
-
-        const number =
-            parseFloat(value);
-
-
-        if (
-            Number.isNaN(number)
-        ) {
-
-            return;
-
-        }
-
-
-        applyStyle(
-            "fontSize",
-            Math.max(
-                6,
-                Math.min(
-                    120,
-                    number
-                )
-            ) + "px"
-        );
-
-    }
-
+    /* =====================================================
+       APPLY STYLE
+    ===================================================== */
 
     function applyStyle(
         property,
@@ -573,26 +609,18 @@
         const element =
             getSelectedElement();
 
-
         if (!element) {
-
             return;
-
         }
-
 
         const content =
             getContentElement(
                 element
             );
 
-
         if (!content) {
-
             return;
-
         }
-
 
         content.style[property] =
             value;
@@ -601,7 +629,7 @@
 
 
     /* =====================================================
-       RESET
+       RESET STYLE
     ===================================================== */
 
     function resetTextStyle(
@@ -651,7 +679,7 @@
 
 
     /* =====================================================
-       CANVAS EDITING
+       DOUBLE CLICK DIRECT EDIT
     ===================================================== */
 
     function enableCanvasEditing() {
@@ -661,11 +689,8 @@
                 "#signatureCanvas"
             );
 
-
         if (!canvas) {
-
             return;
-
         }
 
 
@@ -678,11 +703,8 @@
                         ".signature-block"
                     );
 
-
                 if (!block) {
-
                     return;
-
                 }
 
 
@@ -691,20 +713,18 @@
                         ".element-content"
                     );
 
-
                 if (!content) {
-
                     return;
-
                 }
 
 
                 content.contentEditable =
                     "true";
 
+                content.dataset.editing =
+                    "true";
 
                 content.focus();
-
 
                 placeCursorAtEnd(
                     content
@@ -723,20 +743,20 @@
                         ".element-content"
                     );
 
-
                 if (!content) {
-
                     return;
-
                 }
 
 
                 if (
-                    content.contentEditable ===
+                    content.dataset.editing ===
                     "true"
                 ) {
 
                     content.contentEditable =
+                        "false";
+
+                    content.dataset.editing =
                         "false";
 
                     saveEditorHistory();
@@ -761,20 +781,16 @@
         const range =
             document.createRange();
 
-
         const selection =
             window.getSelection();
-
 
         range.selectNodeContents(
             element
         );
 
-
         range.collapse(
             false
         );
-
 
         selection.removeAllRanges();
 
@@ -786,37 +802,10 @@
 
 
     /* =====================================================
-       UPDATE UI
+       REFRESH PROPERTIES
     ===================================================== */
 
-    function updateSelectedProperties() {
-
-        const element =
-            getSelectedElement();
-
-
-        if (!element) {
-
-            return;
-
-        }
-
-
-        if (
-            typeof renderProperties ===
-            "function"
-        ) {
-
-            renderProperties(
-                element
-            );
-
-        }
-
-    }
-
-
-    function updatePropertyUI(
+    function refreshProperties(
         element
     ) {
 
@@ -834,20 +823,48 @@
     }
 
 
-    function updateColorValue(
-        color
+    /* =====================================================
+       RANGE VALUE
+    ===================================================== */
+
+    function updateRangeValue(
+        id,
+        value
     ) {
 
-        const display =
-            document.querySelector(
-                "#textColorValue"
+        const element =
+            document.getElementById(
+                id
             );
 
+        if (element) {
 
-        if (display) {
+            element.textContent =
+                value;
 
-            display.textContent =
-                color.toUpperCase();
+        }
+
+    }
+
+
+    /* =====================================================
+       COLOR VALUE
+    ===================================================== */
+
+    function updateColorValue(
+        id,
+        value
+    ) {
+
+        const element =
+            document.getElementById(
+                id
+            );
+
+        if (element) {
+
+            element.textContent =
+                value.toUpperCase();
 
         }
 
@@ -861,47 +878,72 @@
     function saveEditorHistory() {
 
         if (
-            typeof saveHistory ===
+            typeof saveHistory !==
             "function"
         ) {
 
-            clearTimeout(
-                window.__editorHistoryTimer
-            );
-
-
-            window.__editorHistoryTimer =
-                setTimeout(
-                    () => {
-
-                        saveHistory();
-
-                    },
-                    250
-                );
+            return;
 
         }
+
+        clearTimeout(
+            window.__signatureHistoryTimer
+        );
+
+        window.__signatureHistoryTimer =
+            setTimeout(
+                function () {
+
+                    saveHistory();
+
+                },
+                200
+            );
 
     }
 
 
     /* =====================================================
-       EXPOSE
+       PUBLIC API
     ===================================================== */
 
     window.TextEditor = {
 
         changeFontSize,
 
+        applyFontSize,
+
         applyStyle,
 
-        resetTextStyle,
+        toggleBold,
 
-        updateSelectedProperties
+        toggleItalic,
+
+        toggleUnderline,
+
+        resetTextStyle
 
     };
 
 
-    ready();
+    /* =====================================================
+       START
+    ===================================================== */
+
+    if (
+        document.readyState ===
+        "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            initializeTextEditor
+        );
+
+    } else {
+
+        initializeTextEditor();
+
+    }
 
 })();
