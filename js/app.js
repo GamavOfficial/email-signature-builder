@@ -3175,7 +3175,23 @@ function installProfessionalMediaLinkEngine(){
             $("#proImageAlt").addEventListener("input", e => setAndSave(() => image.alt = e.target.value));
             $("#proImageWidth").addEventListener("input", e => setAndSave(() => image.style.width = Math.max(20, Number(e.target.value)||20) + "px"));
             $("#proImageHeight").addEventListener("input", e => setAndSave(() => image.style.height = Number(e.target.value) > 0 ? Number(e.target.value)+"px" : "auto"));
-            $("#proImageLink").addEventListener("input", e => setAndSave(() => image.dataset.link = e.target.value.trim()));
+            $("#proImageLink").addEventListener(
+    "input",
+    e => {
+
+        const url =
+            e.target.value.trim();
+
+        image.dataset.link =
+            url;
+
+        image.dataset.linkTarget =
+            image.dataset.linkTarget || "blank";
+
+        saveHistory();
+
+    }
+);
             $("#proImageTarget").addEventListener("change", e => setAndSave(() => image.dataset.linkTarget = e.target.checked ? "blank" : "same"));
         }
 
