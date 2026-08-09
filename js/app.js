@@ -2095,6 +2095,24 @@ function setupQuickActions() {
             openTemplateModal
         );
 
+
+    /* =====================================================
+       COPY SIGNATURE
+    ===================================================== */
+
+    const copyButton =
+        $("#copySignatureBtn");
+
+
+    if (copyButton) {
+
+        copyButton.addEventListener(
+            "click",
+            copySignature
+        );
+
+    }
+
 }
 
 
@@ -2305,6 +2323,468 @@ function closePreview() {
 
     $("#previewModal")
         .hidden = true;
+
+}
+
+/* =========================================================
+   GMAIL-SAFE COPY SIGNATURE ENGINE
+========================================================= */
+
+async function copySignature() {
+
+    const canvas =
+        $("#signatureCanvas");
+
+    if (!canvas) {
+        return;
+    }
+
+
+    /* =====================================================
+       CLONE SIGNATURE
+    ===================================================== */
+
+    const clone =
+        canvas.cloneNode(true);
+
+
+    /* =====================================================
+       REMOVE EDITOR-ONLY STYLES / ATTRIBUTES
+    ===================================================== */
+
+    clone.style.transform = "none";
+    clone.style.zoom = "1";
+
+    clone.removeAttribute("id");
+
+    clone
+        .querySelectorAll(".signature-block")
+        .forEach(block => {
+
+            block.classList.remove("selected");
+
+            block.removeAttribute("tabindex");
+
+            block.removeAttribute("contenteditable");
+
+        });
+
+
+    clone
+        .querySelectorAll("*")
+        .forEach(node => {
+
+            node.removeAttribute("contenteditable");
+
+            node.removeAttribute("tabindex");
+
+            node.removeAttribute("data-id");
+
+            node.removeAttribute("data-type");
+
+            node.removeAttribute("data-src");
+
+            node.removeAttribute("data-file-name");
+
+            node.removeAttribute("data-file-type");
+
+            node.removeAttribute("data-file-size");
+
+            node.removeAttribute("data-link-target");
+
+            node.removeAttribute("data-click-handler-installed");
+
+        });
+
+
+    /* =====================================================
+       CONVERT EDITOR BLOCKS TO EMAIL-SAFE TABLE ROWS
+    ===================================================== */
+
+    const blocks =
+        Array.from(
+            clone.querySelectorAll(
+                ":scope > .signature-block"
+            )
+        );
+
+
+    let rows = "";
+
+
+    blocks.forEach(block => {
+
+        const content =
+    block.querySelector(
+        ".element-content"
+    ) ||
+    block.firstElementChild;
+
+if (!content) {
+    return;
+}
+
+
+        /* -------------------------------------------------
+           Clone content
+        ------------------------------------------------- */
+
+        const contentClone =
+            content.cloneNode(true);
+
+
+        /* -------------------------------------------------
+           Remove editor classes
+        ------------------------------------------------- */
+
+        contentClone.classList.remove(
+            "element-content"
+        );
+
+        contentClone.classList.remove(
+            "professional-link"
+        );
+
+        contentClone.classList.remove(
+            "professional-image"
+        );
+
+
+        /* -------------------------------------------------
+           Remove editor attributes
+        ------------------------------------------------- */
+
+        Array.from(
+            contentClone.attributes
+        ).forEach(attribute => {
+
+            if (
+                attribute.name.startsWith(
+                    "data-"
+                )
+            ) {
+
+                contentClone.removeAttribute(
+                    attribute.name
+                );
+
+            }
+
+        });
+
+
+        /* -------------------------------------------------
+           Email-safe block styles
+        ------------------------------------------------- */
+
+        const blockStyle =
+            block.getAttribute(
+                "style"
+            ) || "";
+
+
+        contentClone.style.boxSizing =
+            "border-box";
+
+
+        /* -------------------------------------------------
+           Detect image
+        ------------------------------------------------- */
+
+        const image =
+            contentClone.tagName === "IMG"
+                ? contentClone
+                : contentClone.querySelector(
+                    "img"
+                );
+
+
+        if (image) {
+
+            image.style.display =
+                "block";
+
+            image.style.maxWidth =
+                "100%";
+
+            image.style.height =
+                image.style.height ||
+                "auto";
+
+            image.removeAttribute(
+                "loading"
+            );
+
+            image.removeAttribute(
+                "draggable"
+            );
+
+        }
+
+
+        /* -------------------------------------------------
+           Detect links
+        ------------------------------------------------- */
+
+        const links =
+            contentClone.querySelectorAll(
+                "a"
+            );
+
+
+        links.forEach(link => {
+
+            link.style.textDecoration =
+                link.style.textDecoration ||
+                "none";
+
+            link.removeAttribute(
+                "data-url"
+            );
+
+            link.removeAttribute(
+                "data-target"
+            );
+
+        });
+
+
+        /* =================================================
+           TABLE ROW
+        ================================================= */
+
+        rows += `
+
+<tr>
+
+    <td
+        style="
+            padding:0;
+            margin:0;
+            vertical-align:top;
+            ${blockStyle}
+        "
+    >
+
+        ${contentClone.outerHTML}
+
+    </td>
+
+</tr>
+
+        `.trim();
+
+    });
+
+
+    /* =====================================================
+       FINAL EMAIL-SAFE HTML
+    ===================================================== */
+
+    const html = `
+
+<table
+    cellpadding="0"
+    cellspacing="0"
+    border="0"
+    role="presentation"
+    style="
+        border-collapse:collapse;
+        border-spacing:0;
+        margin:0;
+        padding:0;
+        font-family:Arial,sans-serif;
+    "
+>
+
+    <tbody>
+
+        ${rows}
+
+    </tbody>
+
+</table>
+
+    `.trim();
+
+
+    /* =====================================================
+       PLAIN TEXT FALLBACK
+    ===================================================== */
+
+    const plainText =
+        canvas.innerText
+            .replace(
+                /\n{3,}/g,
+                "\n\n"
+            )
+            .trim();
+
+
+    /* =====================================================
+       COPY HTML + TEXT
+    ===================================================== */
+
+    try {
+
+        if (
+            navigator.clipboard &&
+            window.ClipboardItem
+        ) {
+
+            const clipboardItem =
+                new ClipboardItem({
+
+                    "text/html":
+                        new Blob(
+                            [html],
+                            {
+                                type:
+                                    "text/html"
+                            }
+                        ),
+
+                    "text/plain":
+                        new Blob(
+                            [plainText],
+                            {
+                                type:
+                                    "text/plain"
+                            }
+                        )
+
+                });
+
+
+            await navigator.clipboard.write([
+                clipboardItem
+            ]);
+
+
+            updateStatus(
+                "Signature copied"
+            );
+
+
+            return;
+
+        }
+
+
+        copySignatureFallback(
+            html
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Signature copy failed:",
+            error
+        );
+
+
+        copySignatureFallback(
+            html
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   COPY FALLBACK
+========================================================= */
+
+function copySignatureFallback(
+    html
+) {
+
+    const container =
+        document.createElement(
+            "div"
+        );
+
+
+    container.contentEditable =
+        "true";
+
+
+    container.style.position =
+        "fixed";
+
+    container.style.left =
+        "-99999px";
+
+    container.style.top =
+        "0";
+
+    container.style.opacity =
+        "0";
+
+
+    container.innerHTML =
+        html;
+
+
+    document.body.appendChild(
+        container
+    );
+
+
+    const range =
+        document.createRange();
+
+
+    range.selectNodeContents(
+        container
+    );
+
+
+    const selection =
+        window.getSelection();
+
+
+    selection.removeAllRanges();
+
+    selection.addRange(
+        range
+    );
+
+
+    try {
+
+        document.execCommand(
+            "copy"
+        );
+
+
+        updateStatus(
+            "Signature copied"
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Copy failed:",
+            error
+        );
+
+
+        updateStatus(
+            "Copy failed"
+        );
+
+    }
+
+
+    selection.removeAllRanges();
+
+    container.remove();
 
 }
 
@@ -3356,11 +3836,29 @@ ${isMediaPositioned ? `
                 anchor.rel = e.target.checked ? "noopener noreferrer" : "";
             }));
         } else {
-            $("#proReplaceImage").addEventListener("click", () => {
-                App.pendingImageType = type;
-                imageInput.click();
-                App.replaceImageTarget = element;
-            });
+            $("#proReplaceImage").addEventListener(
+    "click",
+    () => {
+
+        App.pendingImageType = type;
+
+        App.replaceImageTarget =
+            element;
+
+        const currentImageInput =
+            $("#imageInput");
+
+        if (currentImageInput) {
+
+            currentImageInput.value =
+                "";
+
+            currentImageInput.click();
+
+        }
+
+    }
+);
             $("#proImageUrl").addEventListener("change", e => setAndSave(() => {
                 const value = e.target.value.trim();
                 if (value) { image.src = value; image.dataset.src = value; }
