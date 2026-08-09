@@ -2328,6 +2328,11 @@ function closePreview() {
 
 /* =========================================================
    GMAIL-SAFE COPY SIGNATURE ENGINE
+   ========================================================= */
+
+/* =========================================================
+   GMAIL EXACT SIGNATURE COPY ENGINE
+   v3
 ========================================================= */
 
 async function copySignature() {
@@ -2341,121 +2346,119 @@ async function copySignature() {
 
 
     /* =====================================================
-       CLONE SIGNATURE
+       BUILD EMAIL-SAFE HTML
     ===================================================== */
 
-    const clone =
-        canvas.cloneNode(true);
+    const table =
+        document.createElement("table");
+
+    table.setAttribute("cellpadding", "0");
+    table.setAttribute("cellspacing", "0");
+    table.setAttribute("border", "0");
+    table.setAttribute("role", "presentation");
+
+    table.style.borderCollapse =
+        "collapse";
+
+    table.style.borderSpacing =
+        "0";
+
+    table.style.margin =
+        "0";
+
+    table.style.padding =
+        "0";
+
+
+    const tbody =
+        document.createElement("tbody");
+
+    table.appendChild(tbody);
 
 
     /* =====================================================
-       REMOVE EDITOR-ONLY STYLES / ATTRIBUTES
-    ===================================================== */
-
-    clone.style.transform = "none";
-    clone.style.zoom = "1";
-
-    clone.removeAttribute("id");
-
-    clone
-        .querySelectorAll(".signature-block")
-        .forEach(block => {
-
-            block.classList.remove("selected");
-
-            block.removeAttribute("tabindex");
-
-            block.removeAttribute("contenteditable");
-
-        });
-
-
-    clone
-        .querySelectorAll("*")
-        .forEach(node => {
-
-            node.removeAttribute("contenteditable");
-
-            node.removeAttribute("tabindex");
-
-            node.removeAttribute("data-id");
-
-            node.removeAttribute("data-type");
-
-            node.removeAttribute("data-src");
-
-            node.removeAttribute("data-file-name");
-
-            node.removeAttribute("data-file-type");
-
-            node.removeAttribute("data-file-size");
-
-            node.removeAttribute("data-link-target");
-
-            node.removeAttribute("data-click-handler-installed");
-
-        });
-
-
-    /* =====================================================
-       CONVERT EDITOR BLOCKS TO EMAIL-SAFE TABLE ROWS
+       COPY EACH SIGNATURE BLOCK
     ===================================================== */
 
     const blocks =
         Array.from(
-            clone.querySelectorAll(
-                ":scope > .signature-block"
-            )
+            canvas.children
         );
-
-
-    let rows = "";
 
 
     blocks.forEach(block => {
 
+        if (
+            !block.classList.contains(
+                "signature-block"
+            )
+        ) {
+            return;
+        }
+
+
+        const td =
+            document.createElement("td");
+
+
+        td.style.padding =
+            "0";
+
+        td.style.margin =
+            "0";
+
+        td.style.verticalAlign =
+            "top";
+
+
+        /* =================================================
+           CLONE CONTENT
+        ================================================= */
+
         const content =
-    block.querySelector(
-        ".element-content"
-    ) ||
-    block.firstElementChild;
-
-if (!content) {
-    return;
-}
+            block.querySelector(
+                ".element-content"
+            ) ||
+            block.firstElementChild;
 
 
-        /* -------------------------------------------------
-           Clone content
-        ------------------------------------------------- */
+        if (!content) {
+            return;
+        }
 
-        const contentClone =
+
+        const clone =
             content.cloneNode(true);
 
 
-        /* -------------------------------------------------
-           Remove editor classes
-        ------------------------------------------------- */
+        /* =================================================
+           REMOVE EDITOR DATA
+        ================================================= */
 
-        contentClone.classList.remove(
+        clone.classList.remove(
             "element-content"
         );
 
-        contentClone.classList.remove(
+        clone.classList.remove(
             "professional-link"
         );
 
-        contentClone.classList.remove(
+        clone.classList.remove(
             "professional-image"
         );
 
 
-        /* -------------------------------------------------
-           Remove editor attributes
-        ------------------------------------------------- */
+        clone.removeAttribute(
+            "contenteditable"
+        );
+
+        clone.removeAttribute(
+            "tabindex"
+        );
+
 
         Array.from(
-            contentClone.attributes
+            clone.attributes
         ).forEach(attribute => {
 
             if (
@@ -2464,7 +2467,7 @@ if (!content) {
                 )
             ) {
 
-                contentClone.removeAttribute(
+                clone.removeAttribute(
                     attribute.name
                 );
 
@@ -2473,139 +2476,197 @@ if (!content) {
         });
 
 
-        /* -------------------------------------------------
-           Email-safe block styles
-        ------------------------------------------------- */
+        /* =================================================
+           INLINE ROOT COMPUTED STYLE
+        ================================================= */
 
-        const blockStyle =
-            block.getAttribute(
-                "style"
-            ) || "";
-
-
-        contentClone.style.boxSizing =
-            "border-box";
-
-
-        /* -------------------------------------------------
-           Detect image
-        ------------------------------------------------- */
-
-        const image =
-            contentClone.tagName === "IMG"
-                ? contentClone
-                : contentClone.querySelector(
-                    "img"
-                );
-
-
-        if (image) {
-
-            image.style.display =
-                "block";
-
-            image.style.maxWidth =
-                "100%";
-
-            image.style.height =
-                image.style.height ||
-                "auto";
-
-            image.removeAttribute(
-                "loading"
-            );
-
-            image.removeAttribute(
-                "draggable"
-            );
-
-        }
-
-
-        /* -------------------------------------------------
-           Detect links
-        ------------------------------------------------- */
-
-        const links =
-            contentClone.querySelectorAll(
-                "a"
-            );
-
-
-        links.forEach(link => {
-
-            link.style.textDecoration =
-                link.style.textDecoration ||
-                "none";
-
-            link.removeAttribute(
-                "data-url"
-            );
-
-            link.removeAttribute(
-                "data-target"
-            );
-
-        });
+        inlineEmailStyles(
+            content,
+            clone
+        );
 
 
         /* =================================================
-           TABLE ROW
+           IMAGES
         ================================================= */
 
-        rows += `
+        clone
+            .querySelectorAll("img")
+            .forEach(
+                originalImage => {
 
-<tr>
+                    const image =
+                        originalImage;
 
-    <td
-        style="
-            padding:0;
-            margin:0;
-            vertical-align:top;
-            ${blockStyle}
-        "
-    >
+                    image.style.display =
+                        "block";
 
-        ${contentClone.outerHTML}
+                    image.style.maxWidth =
+                        "100%";
 
-    </td>
+                    image.style.height =
+                        image.style.height ||
+                        "auto";
 
-</tr>
+                    image.removeAttribute(
+                        "loading"
+                    );
 
-        `.trim();
+                    image.removeAttribute(
+                        "draggable"
+                    );
+
+                }
+            );
+
+
+        /* =================================================
+           LINKS
+        ================================================= */
+
+        clone
+            .querySelectorAll("a")
+            .forEach(
+                link => {
+
+                    link.removeAttribute(
+                        "data-url"
+                    );
+
+                    link.removeAttribute(
+                        "data-target"
+                    );
+
+                    link.removeAttribute(
+                        "contenteditable"
+                    );
+
+                    link.removeAttribute(
+                        "tabindex"
+                    );
+
+                    link.style.textDecoration =
+                        link.style.textDecoration ||
+                        "none";
+
+                }
+            );
+
+
+        /* =================================================
+           CLICKABLE IMAGE
+        ================================================= */
+
+        clone
+            .querySelectorAll("img")
+            .forEach(
+                image => {
+
+                    const originalImage =
+                        findMatchingImage(
+                            content,
+                            image
+                        );
+
+
+                    if (
+                        !originalImage
+                    ) {
+                        return;
+                    }
+
+
+                    const url =
+                        originalImage.dataset.link;
+
+
+                    if (!url) {
+                        return;
+                    }
+
+
+                    const wrapper =
+                        document.createElement(
+                            "a"
+                        );
+
+
+                    wrapper.href =
+                        ensureHttps(
+                            url
+                        );
+
+
+                    wrapper.target =
+                        originalImage.dataset.linkTarget ===
+                        "same"
+                            ? "_self"
+                            : "_blank";
+
+
+                    if (
+                        wrapper.target ===
+                        "_blank"
+                    ) {
+
+                        wrapper.rel =
+                            "noopener noreferrer";
+
+                    }
+
+
+                    image.parentNode
+                        .insertBefore(
+                            wrapper,
+                            image
+                        );
+
+
+                    wrapper.appendChild(
+                        image
+                    );
+
+                }
+            );
+
+
+        /* =================================================
+           ADD CONTENT TO TD
+        ================================================= */
+
+        td.appendChild(
+            clone
+        );
+
+
+        /* =================================================
+           CREATE ROW
+        ================================================= */
+
+        const tr =
+            document.createElement(
+                "tr"
+            );
+
+
+        tr.appendChild(
+            td
+        );
+
+
+        tbody.appendChild(
+            tr
+        );
 
     });
 
 
     /* =====================================================
-       FINAL EMAIL-SAFE HTML
+       FINAL HTML
     ===================================================== */
 
-    const html = `
-
-<table
-    cellpadding="0"
-    cellspacing="0"
-    border="0"
-    role="presentation"
-    style="
-        border-collapse:collapse;
-        border-spacing:0;
-        margin:0;
-        padding:0;
-        font-family:Arial,sans-serif;
-    "
->
-
-    <tbody>
-
-        ${rows}
-
-    </tbody>
-
-</table>
-
-    `.trim();
+    const html =
+        table.outerHTML;
 
 
     /* =====================================================
@@ -2632,7 +2693,7 @@ if (!content) {
             window.ClipboardItem
         ) {
 
-            const clipboardItem =
+            const item =
                 new ClipboardItem({
 
                     "text/html":
@@ -2657,7 +2718,7 @@ if (!content) {
 
 
             await navigator.clipboard.write([
-                clipboardItem
+                item
             ]);
 
 
@@ -2680,7 +2741,7 @@ if (!content) {
     catch (error) {
 
         console.error(
-            "Signature copy failed:",
+            "Gmail copy failed:",
             error
         );
 
@@ -2691,6 +2752,190 @@ if (!content) {
 
     }
 
+}
+
+
+/* =========================================================
+   INLINE EMAIL STYLES
+========================================================= */
+
+function inlineEmailStyles(
+    original,
+    clone
+) {
+
+    if (
+        !original ||
+        !clone
+    ) {
+        return;
+    }
+
+
+    const computed =
+        window.getComputedStyle(
+            original
+        );
+
+
+    const properties = [
+
+        "display",
+
+        "width",
+        "height",
+
+        "max-width",
+        "min-width",
+
+        "margin",
+        "margin-top",
+        "margin-right",
+        "margin-bottom",
+        "margin-left",
+
+        "padding",
+        "padding-top",
+        "padding-right",
+        "padding-bottom",
+        "padding-left",
+
+        "font-family",
+        "font-size",
+        "font-weight",
+        "font-style",
+
+        "line-height",
+        "letter-spacing",
+
+        "color",
+
+        "background",
+        "background-color",
+
+        "text-align",
+        "text-decoration",
+
+        "vertical-align",
+
+        "border",
+        "border-width",
+        "border-style",
+        "border-color",
+        "border-radius",
+
+        "opacity"
+
+    ];
+
+
+    properties.forEach(
+        property => {
+
+            const value =
+                computed.getPropertyValue(
+                    property
+                );
+
+
+            if (
+                value &&
+                value !== "normal" &&
+                value !== "none"
+            ) {
+
+                clone.style.setProperty(
+                    property,
+                    value
+                );
+
+            }
+
+        }
+    );
+
+
+    /* =====================================================
+       CHILDREN
+    ===================================================== */
+
+    const originalChildren =
+        Array.from(
+            original.children
+        );
+
+
+    const cloneChildren =
+        Array.from(
+            clone.children
+        );
+
+
+    originalChildren.forEach(
+        (child, index) => {
+
+            const clonedChild =
+                cloneChildren[index];
+
+
+            if (
+                clonedChild
+            ) {
+
+                inlineEmailStyles(
+                    child,
+                    clonedChild
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   FIND ORIGINAL IMAGE
+========================================================= */
+
+/* =========================================================
+   FIND ORIGINAL IMAGE
+   ========================================================= */
+
+function findMatchingImage(
+    originalRoot,
+    clonedImage
+) {
+
+    if (!originalRoot || !clonedImage) {
+        return null;
+    }
+
+    const originalImages =
+        originalRoot.tagName &&
+        originalRoot.tagName.toLowerCase() === "img"
+            ? [originalRoot]
+            : Array.from(
+                originalRoot.querySelectorAll("img")
+            );
+
+    const clonedImages =
+        clonedImage.parentElement
+            ? Array.from(
+                clonedImage.parentElement
+                    .querySelectorAll("img")
+            )
+            : [clonedImage];
+
+    const index =
+        clonedImages.indexOf(clonedImage);
+
+    if (index < 0) {
+        return null;
+    }
+
+    return originalImages[index] || null;
 }
 
 
@@ -3360,6 +3605,28 @@ function rgbToHex(
             .join("");
 
       }
+      
+      function ensureHttps(url) {
+
+    const value =
+        String(url || "").trim();
+
+    if (!value) {
+        return "#";
+    }
+
+    if (
+        /^(https?:|mailto:|tel:|sms:)/i.test(value)
+    ) {
+        return value;
+    }
+
+    if (/^www\./i.test(value)) {
+        return "https://" + value;
+    }
+
+    return "https://" + value;
+}
 
 /* =========================================================
    PROFESSIONAL LINK + IMAGE ENGINE
@@ -3375,13 +3642,6 @@ function installProfessionalMediaLinkEngine(){
         return escapeHTML(value == null ? "" : value);
     }
 
-    function ensureHttps(url){
-        const value = String(url || "").trim();
-        if (!value) return "#";
-        if (/^(https?:|mailto:|tel:|sms:)/i.test(value)) return value;
-        if (/^www\./i.test(value)) return "https://" + value;
-        return "https://" + value;
-    }
 
     function makeId(prefix="element"){
         return prefix + "-" + Date.now() + "-" + Math.random().toString(36).slice(2,7);
