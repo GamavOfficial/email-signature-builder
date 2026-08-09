@@ -1125,3 +1125,76 @@ button {
     letter-spacing: .08em;
 }
 
+
+/* =========================================================
+   LOGO + BANNER ALIGNMENT / POSITION CONTROLS
+========================================================= */
+
+.alignment-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+}
+
+
+.align-btn,
+.position-btn {
+    height: 34px;
+
+    border: 1px solid #292e38;
+
+    border-radius: 7px;
+
+    background: #151820;
+
+    color: #cfd4de;
+
+    font-size: 13px;
+
+    transition: .18s ease;
+}
+
+
+.align-btn:hover,
+.position-btn:hover {
+    background: #202530;
+
+    border-color: #4d83ff;
+
+    color: white;
+}
+
+
+.align-btn.active,
+.position-btn.active {
+    background: #2563eb;
+
+    border-color: #2563eb;
+
+    color: white;
+}
+
+
+/* =========================================================
+   POSITION GRID
+========================================================= */
+
+.position-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 6px;
+
+}
+
+
+.position-btn {
+
+    height: 38px;
+
+    font-size: 16px;
+
+}
