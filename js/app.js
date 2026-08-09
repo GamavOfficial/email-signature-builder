@@ -3059,9 +3059,16 @@ function installProfessionalMediaLinkEngine(){
     };
 
     function renderProfessionalProperties(element){
-        const type = element.dataset.type;
-        const isLink = type === "link" || type === "button";
-        const image = element.querySelector("img");
+
+    const type = element.dataset.type;
+
+    const isLink = type === "link" || type === "button";
+
+    const isMediaPositioned =
+        type === "logo" ||
+        type === "banner";
+
+    const image = element.querySelector("img");
         const anchor = element.querySelector("a");
         const targetBlank = anchor ? anchor.target === "_blank" : true;
         const content = anchor || image;
@@ -3129,6 +3136,87 @@ function installProfessionalMediaLinkEngine(){
                 </label>
             </div>
             `}
+            
+${isMediaPositioned ? `
+
+<div class="property-section">
+
+    <label>Alignment</label>
+
+    <div class="alignment-grid">
+
+        <button
+            type="button"
+            class="align-btn"
+            data-media-align="left"
+        >
+            ⬅
+        </button>
+
+        <button
+            type="button"
+            class="align-btn"
+            data-media-align="center"
+        >
+            ↔
+        </button>
+
+        <button
+            type="button"
+            class="align-btn"
+            data-media-align="right"
+        >
+            ➡
+        </button>
+
+    </div>
+
+</div>
+
+
+<div class="property-section">
+
+    <label>Position</label>
+
+    <div class="position-grid">
+
+        <button
+            type="button"
+            class="position-btn"
+            data-media-position="top"
+        >
+            ↑
+        </button>
+
+        <button
+            type="button"
+            class="position-btn"
+            data-media-position="right"
+        >
+            →
+        </button>
+
+        <button
+            type="button"
+            class="position-btn"
+            data-media-position="bottom"
+        >
+            ↓
+        </button>
+
+        <button
+            type="button"
+            class="position-btn"
+            data-media-position="left"
+        >
+            ←
+        </button>
+
+    </div>
+
+</div>
+
+` : ""}
 
             <div class="property-section">
                 <label>Text Color</label>
@@ -3154,6 +3242,111 @@ function installProfessionalMediaLinkEngine(){
             fn();
             saveHistory();
         };
+        
+        if (isMediaPositioned) {
+
+    /* ==============================
+       ALIGNMENT
+    ============================== */
+
+    $$("[data-media-align]").forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            const alignment =
+                button.dataset.mediaAlign;
+
+            image.style.display = "block";
+
+            if (alignment === "left") {
+
+                image.style.marginLeft = "0";
+                image.style.marginRight = "auto";
+
+            }
+
+            if (alignment === "center") {
+
+                image.style.marginLeft = "auto";
+                image.style.marginRight = "auto";
+
+            }
+
+            if (alignment === "right") {
+
+                image.style.marginLeft = "auto";
+                image.style.marginRight = "0";
+
+            }
+
+            $$("[data-media-align]").forEach(btn => {
+                btn.classList.remove("active");
+            });
+
+            button.classList.add("active");
+
+            saveHistory();
+
+        });
+
+    });
+
+
+    /* ==============================
+       POSITION
+    ============================== */
+
+    $$("[data-media-position]").forEach(button => {
+
+        button.addEventListener("click", () => {
+
+            const position =
+                button.dataset.mediaPosition;
+
+            const block =
+                element;
+
+            if (position === "top") {
+
+                block.style.marginTop = "0";
+                block.style.marginBottom = "auto";
+
+            }
+
+            if (position === "right") {
+
+                block.style.marginLeft = "auto";
+                block.style.marginRight = "0";
+
+            }
+
+            if (position === "bottom") {
+
+                block.style.marginTop = "auto";
+                block.style.marginBottom = "0";
+
+            }
+
+            if (position === "left") {
+
+                block.style.marginLeft = "0";
+                block.style.marginRight = "auto";
+
+            }
+
+            $$("[data-media-position]").forEach(btn => {
+                btn.classList.remove("active");
+            });
+
+            button.classList.add("active");
+
+            saveHistory();
+
+        });
+
+    });
+
+}
 
         if (isLink) {
             $("#proLinkText").addEventListener("input", e => setAndSave(() => anchor.textContent = e.target.value));
