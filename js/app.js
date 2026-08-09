@@ -2898,7 +2898,7 @@ function installProfessionalMediaLinkEngine(){
     function ensureHttps(url){
         const value = String(url || "").trim();
         if (!value) return "#";
-        if (/^(https?:|mailto:|tel:|sms:|javascript:)/i.test(value)) return value;
+        if (/^(https?:|mailto:|tel:|sms:)/i.test(value)) return value;
         if (/^www\./i.test(value)) return "https://" + value;
         return "https://" + value;
     }
@@ -3193,7 +3193,74 @@ function installProfessionalMediaLinkEngine(){
     }
 );
             $("#proImageTarget").addEventListener("change", e => setAndSave(() => image.dataset.linkTarget = e.target.checked ? "blank" : "same"));
+        
+        
+        /* =====================================================
+   CLICKABLE IMAGE
+===================================================== */
+
+if (
+    !image.dataset.clickHandlerInstalled
+) {
+
+    image.addEventListener(
+        "click",
+        function(event) {
+
+            const url =
+                image.dataset.link;
+
+            if (!url) {
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+
+
+            const finalUrl =
+                ensureHttps(url);
+
+
+            if (
+    image.dataset.linkTarget === "same"
+) {
+
+    window.location.href =
+        finalUrl;
+
+} else {
+
+    const link =
+        document.createElement("a");
+
+    link.href =
+        finalUrl;
+
+    link.target =
+        "_blank";
+
+    link.rel =
+        "noopener noreferrer";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+}
+
         }
+    );
+
+
+    image.dataset.clickHandlerInstalled =
+        "1";
+
+}
+
+}
 
         $("#proTextColor").addEventListener("input", e => setAndSave(() => content.style.color = e.target.value));
         $("#proBgColor").addEventListener("input", e => setAndSave(() => content.style.backgroundColor = e.target.value));
