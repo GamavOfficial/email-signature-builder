@@ -4193,3 +4193,893 @@ if (document.readyState === "loading") {
     installProfessionalMediaLinkEngine();
 }
 })();
+
+
+/* =========================================================
+   GAMAV ELEMENT TYPE NAVIGATOR
+   8 ELEMENT TYPES + SAME TYPE ELEMENT LIST + COUNT
+   ========================================================= */
+
+(function () {
+
+    if (window.GamavElementNavigatorInstalled) {
+        return;
+    }
+
+    window.GamavElementNavigatorInstalled = true;
+
+
+    const TYPE_INFO = {
+
+        text: {
+            label: "Text",
+            actualType: "paragraph"
+        },
+
+        heading: {
+            label: "Heading",
+            actualType: "heading"
+        },
+
+        logo: {
+            label: "Logo",
+            actualType: "logo"
+        },
+
+        banner: {
+            label: "Banner",
+            actualType: "banner"
+        },
+
+        social: {
+            label: "Social",
+            actualType: "social"
+        },
+
+        link: {
+            label: "Link",
+            actualType: "link"
+        },
+
+        divider: {
+            label: "Divider",
+            actualType: "divider"
+        },
+
+        button: {
+            label: "Button",
+            actualType: "button"
+        }
+
+    };
+
+
+    function getCanvas() {
+
+        return document.querySelector(
+            "#signatureCanvas"
+        );
+
+    }
+
+
+    function normalizeType(type) {
+
+        if (type === "paragraph") {
+            return "text";
+        }
+
+        return type;
+
+    }
+
+
+    function getElementsByType(type) {
+
+        const canvas = getCanvas();
+
+        if (!canvas) {
+            return [];
+        }
+
+        const actualType =
+            TYPE_INFO[type]?.actualType || type;
+
+
+        return Array.from(
+            canvas.querySelectorAll(
+                ".signature-block"
+            )
+        ).filter(function (element) {
+
+            return element.dataset.type === actualType;
+
+        });
+
+    }
+
+
+    function getElementTitle(element, index) {
+
+        const content =
+            element.querySelector(
+                ".element-content"
+            );
+
+        if (!content) {
+
+            return (
+                TYPE_INFO[
+                    normalizeType(
+                        element.dataset.type
+                    )
+                ]?.label || "Element"
+            ) + " " + (index + 1);
+
+        }
+
+
+        let text =
+            content.innerText ||
+            content.textContent ||
+            "";
+
+
+        text = text
+            .replace(/\s+/g, " ")
+            .trim();
+
+
+        if (!text) {
+
+            const type =
+                normalizeType(
+                    element.dataset.type
+                );
+
+            return (
+                TYPE_INFO[type]?.label ||
+                "Element"
+            ) + " " + (index + 1);
+
+        }
+
+
+        if (text.length > 35) {
+
+            text =
+                text.substring(0, 35) + "...";
+
+        }
+
+
+        return text;
+
+    }
+
+
+    function createNavigator(element) {
+
+        const selectedType =
+            normalizeType(
+                element.dataset.type
+            );
+
+
+        if (!TYPE_INFO[selectedType]) {
+            return "";
+        }
+
+
+        const items =
+            getElementsByType(
+                selectedType
+            );
+
+
+        let options = "";
+
+
+        Object.keys(TYPE_INFO)
+            .forEach(function (key) {
+
+                const info =
+                    TYPE_INFO[key];
+
+
+                options += `
+                    <option
+                        value="${key}"
+                        ${key === selectedType ? "selected" : ""}
+                    >
+                        ${info.label}
+                    </option>
+                `;
+
+            });
+
+
+        let listHTML = "";
+
+
+        if (items.length === 0) {
+
+            listHTML = `
+                <div class="gamav-element-empty">
+                    No ${TYPE_INFO[selectedType].label}
+                    elements
+                </div>
+            `;
+
+        } else {
+
+            items.forEach(
+                function (item, index) {
+
+                    const isSelected =
+                        item === element;
+
+
+                    listHTML += `
+                        <button
+                            type="button"
+                            class="gamav-element-item ${
+                                isSelected
+                                    ? "active"
+                                    : ""
+                            }"
+                            data-gamav-element-index="${index}"
+                        >
+
+                            <span
+                                class="gamav-element-number"
+                            >
+                                ${index + 1}
+                            </span>
+
+                            <span
+                                class="gamav-element-name"
+                            >
+                                ${escapeText(
+                                    getElementTitle(
+                                        item,
+                                        index
+                                    )
+                                )}
+                            </span>
+
+                            ${
+                                isSelected
+                                    ? `
+                                        <span
+                                            class="gamav-element-check"
+                                        >
+                                            ✓
+                                        </span>
+                                    `
+                                    : ""
+                            }
+
+                        </button>
+                    `;
+
+                }
+            );
+
+        }
+
+
+        return `
+
+            <div
+                class="gamav-type-navigator"
+                data-gamav-selected-type="${selectedType}"
+            >
+
+                <div
+                    class="gamav-type-header"
+                >
+
+                    <div>
+                        <div
+                            class="gamav-type-title"
+                        >
+                            Element
+                        </div>
+
+                        <div
+                            class="gamav-type-subtitle"
+                        >
+                            Switch element type
+                        </div>
+                    </div>
+
+                    <div
+                        class="gamav-type-count"
+                    >
+                        ${items.length}
+                    </div>
+
+                </div>
+
+
+                <select
+                    id="gamavElementTypeSelect"
+                    class="gamav-element-type-select"
+                >
+
+                    ${options}
+
+                </select>
+
+
+                <div
+                    class="gamav-list-title"
+                >
+                    ${TYPE_INFO[selectedType].label}
+                    Elements
+                </div>
+
+
+                <div
+                    class="gamav-element-list"
+                >
+
+                    ${listHTML}
+
+                </div>
+
+
+                <div
+                    class="gamav-total"
+                >
+
+                    <span>
+                        Total ${TYPE_INFO[selectedType].label}
+                    </span>
+
+                    <strong>
+                        ${items.length}
+                    </strong>
+
+                </div>
+
+            </div>
+
+        `;
+
+    }
+
+
+    function escapeText(value) {
+
+        return String(value || "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+
+    }
+
+
+    function refreshNavigator(element) {
+
+        const panel =
+            document.querySelector(
+                "#propertiesPanel"
+            );
+
+
+        if (!panel || !element) {
+            return;
+        }
+
+
+        const oldNavigator =
+            panel.querySelector(
+                ".gamav-type-navigator"
+            );
+
+
+        if (oldNavigator) {
+            oldNavigator.remove();
+        }
+
+
+        panel.insertAdjacentHTML(
+            "afterbegin",
+            createNavigator(element)
+        );
+
+
+        setupNavigatorEvents();
+
+    }
+
+
+    function setupNavigatorEvents() {
+
+        const panel =
+            document.querySelector(
+                "#propertiesPanel"
+            );
+
+
+        if (!panel) {
+            return;
+        }
+
+
+        const select =
+            panel.querySelector(
+                "#gamavElementTypeSelect"
+            );
+
+
+        if (select) {
+
+            select.onchange =
+                function () {
+
+                    const type =
+                        this.value;
+
+
+                    refreshNavigatorForType(
+                        type
+                    );
+
+                };
+
+        }
+
+
+        panel
+            .querySelectorAll(
+                ".gamav-element-item"
+            )
+            .forEach(
+                function (button) {
+
+                    button.onclick =
+                        function () {
+
+                            const index =
+                                Number(
+                                    this.dataset
+                                        .gamavElementIndex
+                                );
+
+
+                            const type =
+                                panel
+                                    .querySelector(
+                                        ".gamav-type-navigator"
+                                    )
+                                    ?.dataset
+                                    .gamavSelectedType;
+
+
+                            const elements =
+                                getElementsByType(
+                                    type
+                                );
+
+
+                            const target =
+                                elements[index];
+
+
+                            if (!target) {
+                                return;
+                            }
+
+
+                            if (
+                                typeof window
+                                    .selectElement ===
+                                "function"
+                            ) {
+
+                                window.selectElement(
+                                    target
+                                );
+
+                            }
+
+                        };
+
+                }
+            );
+
+    }
+
+
+    function refreshNavigatorForType(type) {
+
+        const panel =
+            document.querySelector(
+                "#propertiesPanel"
+            );
+
+
+        if (!panel) {
+            return;
+        }
+
+
+        const elements =
+            getElementsByType(type);
+
+
+        const oldNavigator =
+            panel.querySelector(
+                ".gamav-type-navigator"
+            );
+
+
+        if (!oldNavigator) {
+            return;
+        }
+
+
+        let selected =
+            elements[0];
+
+
+        if (
+            window.App &&
+            App.selectedElement
+        ) {
+
+            const selectedType =
+                normalizeType(
+                    App.selectedElement
+                        .dataset.type
+                );
+
+
+            if (
+                selectedType === type &&
+                elements.includes(
+                    App.selectedElement
+                )
+            ) {
+
+                selected =
+                    App.selectedElement;
+
+            }
+
+        }
+
+
+        oldNavigator.outerHTML =
+            createNavigator(
+                selected || {
+                    dataset: {
+                        type:
+                            TYPE_INFO[type]
+                                .actualType
+                    }
+                }
+            );
+
+
+        setupNavigatorEvents();
+
+    }
+
+
+    function installStyles() {
+
+        if (
+            document.getElementById(
+                "gamavElementNavigatorStyles"
+            )
+        ) {
+            return;
+        }
+
+
+        const style =
+            document.createElement(
+                "style"
+            );
+
+
+        style.id =
+            "gamavElementNavigatorStyles";
+
+
+        style.textContent = `
+
+            .gamav-type-navigator {
+                width: 100%;
+                box-sizing: border-box;
+                padding: 0 0 20px 0;
+                margin-bottom: 20px;
+                border-bottom: 1px solid #252a35;
+            }
+
+
+            .gamav-type-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                margin-bottom: 12px;
+            }
+
+
+            .gamav-type-title {
+                font-size: 18px;
+                font-weight: 700;
+                color: #f1f5f9;
+            }
+
+
+            .gamav-type-subtitle {
+                margin-top: 4px;
+                font-size: 12px;
+                color: #7d8494;
+            }
+
+
+            .gamav-type-count {
+                min-width: 34px;
+                height: 34px;
+                padding: 0 10px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-sizing: border-box;
+                background: #1b2230;
+                border: 1px solid #303847;
+                color: #dbeafe;
+                font-size: 13px;
+                font-weight: 700;
+            }
+
+
+            .gamav-element-type-select {
+                width: 100%;
+                min-height: 48px;
+                padding: 0 14px;
+                border-radius: 10px;
+                border: 1px solid #303847;
+                background: #151a22;
+                color: #f1f5f9;
+                font-size: 15px;
+                outline: none;
+                box-sizing: border-box;
+                cursor: pointer;
+            }
+
+
+            .gamav-element-type-select:focus {
+                border-color: #4f6fd8;
+            }
+
+
+            .gamav-list-title {
+                margin-top: 18px;
+                margin-bottom: 8px;
+                font-size: 13px;
+                font-weight: 700;
+                color: #9aa3b2;
+                text-transform: uppercase;
+                letter-spacing: .5px;
+            }
+
+
+            .gamav-element-list {
+                display: flex;
+                flex-direction: column;
+                gap: 7px;
+                max-height: 240px;
+                overflow-y: auto;
+            }
+
+
+            .gamav-element-item {
+                width: 100%;
+                min-height: 46px;
+                padding: 8px 10px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                border: 1px solid #292f3b;
+                border-radius: 9px;
+                background: #141922;
+                color: #d8dee9;
+                text-align: left;
+                cursor: pointer;
+                box-sizing: border-box;
+            }
+
+
+            .gamav-element-item:hover {
+                background: #1b2230;
+                border-color: #3b4557;
+            }
+
+
+            .gamav-element-item.active {
+                background: #1d2b48;
+                border-color: #4f6fd8;
+            }
+
+
+            .gamav-element-number {
+                width: 25px;
+                height: 25px;
+                flex: 0 0 25px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 7px;
+                background: #222938;
+                color: #aeb8c8;
+                font-size: 12px;
+                font-weight: 700;
+            }
+
+
+            .gamav-element-name {
+                min-width: 0;
+                flex: 1;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                font-size: 13px;
+            }
+
+
+            .gamav-element-check {
+                color: #65e6a3;
+                font-size: 15px;
+                font-weight: 800;
+            }
+
+
+            .gamav-element-empty {
+                padding: 14px;
+                border: 1px dashed #303847;
+                border-radius: 9px;
+                color: #737c8d;
+                font-size: 13px;
+                text-align: center;
+            }
+
+
+            .gamav-total {
+                margin-top: 10px;
+                padding-top: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                color: #858e9f;
+                font-size: 12px;
+            }
+
+
+            .gamav-total strong {
+                color: #e2e8f0;
+                font-size: 13px;
+            }
+
+        `;
+
+
+        document.head.appendChild(
+            style
+        );
+
+    }
+
+
+    function hookRenderProperties() {
+
+        if (
+            typeof window.renderProperties !==
+            "function"
+        ) {
+            return;
+        }
+
+
+        if (
+            window.renderProperties
+                .__gamavNavigatorHooked
+        ) {
+            return;
+        }
+
+
+        const originalRender =
+            window.renderProperties;
+
+
+        function wrappedRender(
+            element
+        ) {
+
+            originalRender(
+                element
+            );
+
+
+            setTimeout(
+                function () {
+
+                    refreshNavigator(
+                        element
+                    );
+
+                },
+                0
+            );
+
+        }
+
+
+        wrappedRender
+            .__gamavNavigatorHooked =
+            true;
+
+
+        window.renderProperties =
+            wrappedRender;
+
+    }
+
+
+    function init() {
+
+        installStyles();
+
+        hookRenderProperties();
+
+
+        setTimeout(
+            function () {
+
+                if (
+                    window.App &&
+                    App.selectedElement
+                ) {
+
+                    refreshNavigator(
+                        App.selectedElement
+                    );
+
+                }
+
+            },
+            100
+        );
+
+    }
+
+
+    if (
+        document.readyState ===
+        "loading"
+    ) {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            init
+        );
+
+    } else {
+
+        init();
+
+    }
+
+
+})();
