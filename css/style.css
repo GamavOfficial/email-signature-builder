@@ -1196,3 +1196,31 @@ button {
     font-size: 16px;
 
 }
+
+
+/* =========================================================
+   MOBILE PROPERTIES - FULL WIDTH FIX
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .right-panel {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+        overflow-x: hidden;
+    }
+
+    .properties-panel {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    #propertiesPanel {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+}
