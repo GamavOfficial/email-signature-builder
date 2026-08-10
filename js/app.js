@@ -4288,3 +4288,26 @@ if (document.readyState === "loading") {
     installProfessionalMediaLinkEngine();
 }
 })();
+
+function copyRealSignature() {
+    const signatureDiv = document.getElementById("signatureCanvas"); // HTML கோப்பில் உள்ள correct ID
+    
+    if (!signatureDiv) return;
+
+    const htmlContent = signatureDiv.innerHTML;
+    const textContent = signatureDiv.innerText;
+
+    const clipboardItem = new ClipboardItem({
+        "text/html": new Blob([htmlContent], { type: "text/html" }),
+        "text/plain": new Blob([textContent], { type: "text/plain" })
+    });
+
+    navigator.clipboard.write([clipboardItem]).then(() => {
+        alert("Signature copied successfully! Now paste it into Gmail.");
+    }).catch(err => {
+        console.error("Copy failed: ", err);
+    });
+}
+
+// HTML-ல் உள்ள copySignatureBtn பட்டனுடன் இணைக்க:
+document.getElementById("copySignatureBtn").addEventListener("click", copyRealSignature);
